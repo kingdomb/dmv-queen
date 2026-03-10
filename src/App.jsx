@@ -1,32 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion'
 import {
-  Sparkles,
+  ArrowRight,
+  Check,
   CheckCircle,
-  Phone,
+  Facebook,
+  Gift,
+  Instagram,
   Mail,
   MapPin,
-  Star,
-  ArrowRight,
   Menu,
-  X,
+  Phone,
+  Sparkles,
+  Star,
   Tag,
-  Facebook,
-  Instagram,
   Twitter,
-  Gift,
-  Check,
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+  X,
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 // --- IMAGES ---
-import cleanerImage from './assets/images/placeholder-cleaner.jpg';
-import residentialImg from './assets/images/real-livingroom.jpg';
-import commercialImg from './assets/images/clean-office.jpg';
-import moveInImg from './assets/images/clean-apartment.webp';
+import moveInImg from './assets/images/clean-apartment.webp'
+import commercialImg from './assets/images/clean-office.jpg'
+import logoImg from './assets/images/logo-head-transparent-nav-image.png'
+import cleanerImage from './assets/images/placeholder-cleaner.jpg'
+import residentialImg from './assets/images/real-livingroom.jpg'
+import luxuryHeroImg from './assets/images/luxury-hero.png'
 
 // --- HERO BACKGROUND IMAGES ---
-import combinedHeroImg from './assets/images/combined-hero.png';
-import mobileHeroImg from './assets/images/cleaning-counter.webp';
+import mobileHeroImg from './assets/images/cleaning-counter.webp'
+import combinedHeroImg from './assets/images/combined-hero.png'
 
 // --- CUSTOM SPARKLE COMPONENT ---
 const CleanSparkle = ({ delay = 1, color = 'gold' }) => {
@@ -110,7 +112,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
 
               {/* Modal Header */}
               <div className='bg-gradient-to-r from-royal-green/5 to-teal-50 p-6 px-12 md:p-8 pb-4 text-center'>
-                <h3 className='text-lg md:text-2xl font-extrabold text-slate-900 inline-block relative leading-tight'>
+                <h3 className='text-lg md:text-2xl font-serif font-extrabold text-slate-900 inline-block relative leading-tight'>
                   {title}
                   <CleanSparkle delay={0.5} color='gold' />
                 </h3>
@@ -320,17 +322,19 @@ const App = () => {
       <nav className='fixed w-full z-50 bg-white/80 backdrop-blur-lg shadow-sm border-b border-slate-100 transition-all duration-300'>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
           <div className='flex justify-between items-center h-20'>
-            <div className='flex items-center gap-2'>
-              <div className='bg-gradient-to-br from-royal-green to-teal-600 p-2.5 rounded-xl shadow-lg shadow-royal-green/20'>
-                <Sparkles className='h-6 w-6 text-white' />
-              </div>
-              <div>
-                <h1 className='text-xl font-extrabold tracking-tight text-slate-900 leading-none'>
-                  DMV QUEEN
-                </h1>
-                <span className='text-[10px] font-bold text-royal-gold tracking-[0.2em] uppercase'>
-                  Of Clean
-                </span>
+            <div className='flex items-center gap-3'>
+              <img src={logoImg} alt='DMV Queen Logo' className='h-16 w-auto drop-shadow-sm' />
+              <div className='flex flex-col justify-center translate-y-1'>
+                <div className='font-serif text-royal-dark tracking-wide leading-none flex items-baseline'>
+                  <span className='text-3xl font-semibold'>Q</span>
+                  <span className='text-xl font-semibold md:text-2xl'>UEEN</span>
+                  <span className='text-base italic px-1.5 font-medium'>of</span>
+                  <span className='text-3xl font-semibold'>C</span>
+                  <span className='text-xl font-semibold md:text-2xl'>LEAN</span>
+                </div>
+                <div className='font-serif text-royal-dark text-sm md:text-base font-bold tracking-[0.3em] text-center mt-1 leading-none pl-1'>
+                  LLC
+                </div>
               </div>
             </div>
 
@@ -369,36 +373,13 @@ const App = () => {
         )}
       </nav>
 
-      {/* --- HERO SECTION --- */}
-      <header className='relative pt-32 pb-24 lg:pt-48 lg:pb-40 overflow-hidden'>
-        {/* Image Swapping: Cleaning Counter for Mobile, Wide Hero for Desktop */}
-        <div className='absolute inset-0 z-0 lg:hidden'>
-          <img
-            src={mobileHeroImg}
-            alt='Background Texture'
-            className='w-full h-full object-cover opacity-[0.3]'
-          />
-        </div>
-        <div className='absolute inset-0 z-0 hidden lg:block'>
-          <img
-            src={combinedHeroImg}
-            alt='Background Texture'
-            className='w-full h-full object-cover opacity-[0.3]'
-          />
-        </div>
-
-        <div
-          className='absolute inset-0 z-0 opacity-[0.3]'
-          style={{
-            backgroundImage: 'radial-gradient(#059669 1px, transparent 1px)',
-            backgroundSize: '32px 32px',
-          }}
-        ></div>
-
+      {/* --- HERO SECTION (Modern Split Layout) --- */}
+      <header className='relative pt-28 pb-20 lg:pt-40 lg:pb-32 overflow-hidden bg-royal-beige'>
+        {/* Background Decorative Orbs */}
         <motion.div
           animate={{ y: [0, -40, 0], opacity: [0.3, 0.6, 0.3] }}
           transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-          className='absolute top-0 right-0 -mr-20 -mt-20 w-[500px] h-[500px] bg-royal-gold/20 rounded-full blur-[100px]'
+          className='absolute top-0 right-0 -mr-20 -mt-20 w-[600px] h-[600px] bg-royal-gold/10 rounded-full blur-[100px] pointer-events-none'
         />
         <motion.div
           animate={{ y: [0, 40, 0], opacity: [0.3, 0.6, 0.3] }}
@@ -408,60 +389,109 @@ const App = () => {
             ease: 'easeInOut',
             delay: 1,
           }}
-          className='absolute bottom-0 left-0 -ml-20 -mb-20 w-[500px] h-[500px] bg-royal-green/20 rounded-full blur-[100px]'
+          className='absolute bottom-0 left-0 -ml-20 -mb-20 w-[500px] h-[500px] bg-royal-green/10 rounded-full blur-[100px] pointer-events-none'
         />
 
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10'>
-          <div className='text-center max-w-4xl mx-auto'>
+          <div className='grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center'>
+            
+            {/* Left Column: Text & CTA */}
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
+              className='text-center lg:text-left pt-10 lg:pt-0'
             >
-              <span className='inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-white/80 border border-green-100 text-royal-green text-xs md:text-sm font-bold tracking-wide uppercase mb-8 shadow-sm backdrop-blur-sm'>
+              <span className='inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-white/80 border border-royal-green/20 text-royal-dark text-xs md:text-sm font-bold tracking-wide uppercase mb-8 shadow-sm backdrop-blur-sm'>
                 <Star className='w-4 h-4 text-royal-gold fill-royal-gold' />
                 Royalty Standard Cleaning
               </span>
 
-              <h1 className='text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tight text-slate-900 mb-8 leading-tight drop-shadow-sm'>
-                Your Home Deserves the <br />
-                <span className='relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-royal-green via-teal-500 to-royal-green bg-[length:200%_auto] animate-gradient'>
+              <h1 className='text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-extrabold tracking-tight text-royal-dark mb-6 leading-[1.1] drop-shadow-sm'>
+                Your Home <br className="hidden lg:block"/> Deserves the <br />
+                <span className='relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-royal-gold via-yellow-400 to-royal-gold bg-[length:200%_auto] animate-gradient mt-2'>
                   Royal Treatment
-                  <CleanSparkle color='white' />
+                  <CleanSparkle color='gold' />
                 </span>
               </h1>
 
-              <p className='text-lg md:text-xl text-slate-600 mb-10 leading-relaxed max-w-2xl mx-auto'>
-                Experience the cleanest version of your home. Serving Washington
-                DC, Maryland, and Virginia with eco-friendly, meticulous care.
+              <p className='text-lg md:text-xl text-slate-600 mb-10 leading-relaxed max-w-xl mx-auto lg:mx-0'>
+                We don’t just clean homes; our services are designed to leave your space refreshed, refined, and renewed to a royal standard.
               </p>
 
-              <div className='flex flex-col sm:flex-row justify-center gap-4'>
+              <div className='flex flex-col sm:flex-row justify-center lg:justify-start gap-4'>
                 <button
                   onClick={openContact}
-                  className='w-full sm:w-auto px-8 py-4 bg-royal-green hover:bg-royal-dark text-white rounded-full font-bold text-lg shadow-xl shadow-royal-green/20 transition-all transform hover:-translate-y-1 hover:shadow-2xl'
+                  className='w-full sm:w-auto px-8 py-4 bg-royal-green hover:bg-royal-dark text-white rounded-full font-bold text-lg shadow-xl shadow-royal-green/30 transition-all transform hover:-translate-y-1 hover:shadow-2xl'
                 >
                   Book Your Cleaning
                 </button>
 
                 <button
                   onClick={openSubscribe}
-                  className='w-full sm:w-auto px-8 py-4 bg-white border-2 border-slate-100 text-slate-700 hover:border-royal-green hover:text-royal-green rounded-full font-bold text-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 group'
+                  className='w-full sm:w-auto px-8 py-4 bg-white text-royal-dark border-2 border-slate-200 hover:border-royal-gold hover:text-royal-gold rounded-full font-bold text-lg transition-all flex justify-center items-center gap-2 hover:bg-slate-50'
                 >
-                  <Tag className='w-5 h-5 text-royal-gold group-hover:rotate-12 transition-transform' />
-                  Get Offers
+                  <Gift className='w-5 h-5' />
+                  Get 10% Off
                 </button>
               </div>
             </motion.div>
+
+            {/* Right Column: Hero Image */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, x: 50 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+              className='relative group flex justify-center lg:justify-end items-center h-full px-4 sm:px-0 mt-8 lg:mt-0'
+            >
+              <div className='relative w-full max-w-md lg:max-w-lg xl:max-w-xl aspect-[4/5]'>
+                {/* Decorative Offset Frame */}
+                <div className='absolute inset-0 bg-gradient-to-br from-royal-gold to-orange-400 rounded-t-[10rem] rounded-b-[3rem] transform translate-x-4 translate-y-4 opacity-70 transition-transform duration-700 group-hover:translate-x-6 group-hover:translate-y-6'></div>
+                
+                {/* Image Container */}
+                <div className='absolute inset-0 rounded-t-[10rem] rounded-b-[3rem] overflow-hidden border-4 border-white shadow-2xl z-10 bg-white'>
+                  <img
+                    src={residentialImg}
+                    alt='Beautiful clean living room'
+                    className='w-full h-full object-cover transform transition-transform duration-1000 group-hover:scale-105'
+                  />
+                  {/* Subtle inner shadow overlay */}
+                  <div className='absolute inset-0 rounded-t-[10rem] rounded-b-[3rem] shadow-[inset_0_0_20px_rgba(0,0,0,0.1)] pointer-events-none'></div>
+                </div>
+
+                {/* Floating "Satisfaction" Badge */}
+                <motion.div 
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 1, duration: 0.5 }}
+                  className='absolute -bottom-6 -left-6 z-20 bg-white p-4 rounded-2xl shadow-xl flex items-center gap-3 border border-slate-100'
+                >
+                  <div className='bg-royal-gold/20 p-2 rounded-full'>
+                    <CheckCircle className='w-6 h-6 text-royal-gold' />
+                  </div>
+                  <div>
+                    <p className='text-xs font-bold text-slate-500 uppercase tracking-wider'>Guarantee</p>
+                    <p className='text-sm font-bold text-royal-dark'>100% Satisfaction</p>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+
           </div>
         </div>
       </header>
 
       {/* --- Services Section --- */}
-      <section className='py-24 bg-white relative'>
+      <motion.section 
+        className='py-24 bg-white relative'
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8 }}
+      >
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
           <div className='text-center mb-12'>
-            <h2 className='text-3xl lg:text-4xl font-bold text-slate-900 mb-4'>
+            <h2 className='text-3xl lg:text-4xl font-serif font-bold text-slate-900 mb-4'>
               Our Royal Services
             </h2>
             <div className='w-24 h-1.5 bg-gradient-to-r from-royal-gold to-orange-300 mx-auto rounded-full'></div>
@@ -488,12 +518,16 @@ const App = () => {
             />
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* --- Subscribe Banner --- */}
-      <section
+      <motion.section
         id='subscribe'
         className='py-12 bg-gradient-to-r from-royal-green/5 to-teal-50 border-y border-slate-100 relative overflow-hidden'
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.6 }}
       >
         <div className='absolute top-0 left-0 w-32 h-32 bg-royal-green/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2'></div>
 
@@ -503,7 +537,7 @@ const App = () => {
               <span className='text-royal-gold font-bold tracking-widest text-sm uppercase mb-3 block'>
                 Don't Miss Out
               </span>
-              <h2 className='text-2xl md:text-3xl font-extrabold text-slate-900 mb-4'>
+              <h2 className='text-2xl md:text-3xl font-serif font-extrabold text-slate-900 mb-4'>
                 Join Our Royal List
               </h2>
               <p className='text-slate-600 text-base md:text-lg leading-relaxed'>
@@ -535,39 +569,77 @@ const App = () => {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* --- Why Choose Us --- */}
-      <section className='py-24 bg-slate-900 text-white overflow-hidden'>
-        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-          <div className='grid grid-cols-1 lg:grid-cols-2 gap-16 items-center'>
-            <div className='text-center lg:text-left'>
-              <h2 className='text-3xl md:text-4xl lg:text-5xl font-bold mb-8 leading-tight'>
+      <motion.section 
+        className='py-28 bg-royal-dark text-royal-beige relative overflow-hidden'
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8 }}
+      >
+        <div className='absolute top-0 right-0 -mr-32 -mt-32 w-96 h-96 bg-royal-gold/10 rounded-full blur-[100px]'></div>
+        <div className='absolute bottom-0 left-0 -ml-32 -mb-32 w-96 h-96 bg-royal-green/20 rounded-full blur-[100px]'></div>
+        
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10'>
+          <div className='grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center'>
+            
+            {/* Left Content */}
+            <div className='text-center lg:text-left z-20'>
+              <h2 className='text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-10 leading-tight drop-shadow-sm text-white'>
                 Why Trust <br />
-                <span className='text-royal-green'>The Queen?</span>
+                <span className='italic font-light text-royal-gold'>The Queen?</span>
               </h2>
-              <ul className='space-y-6'>
-                <ListItem text="Eco-friendly 'Green' cleaning options available upon request." />
-                <ListItem text='Professional, vetted, and trained staff.' />
-                <ListItem text='Serving the entire DMV area (DC, MD, VA).' />
-                <ListItem text='100% Satisfaction Guarantee.' />
-              </ul>
+              
+              <div className='grid grid-cols-1 sm:grid-cols-2 gap-6 text-left'>
+                <FeatureCard 
+                  icon={<Sparkles className='w-6 h-6' />} 
+                  title="Eco-Friendly" 
+                  desc="'Green' cleaning options available upon request for a safer home." 
+                />
+                <FeatureCard 
+                  icon={<CheckCircle className='w-6 h-6' />} 
+                  title="Professional" 
+                  desc="Vetted, trained, and dedicated staff delivering royal standards." 
+                />
+                <FeatureCard 
+                  icon={<MapPin className='w-6 h-6' />} 
+                  title="Local Service" 
+                  desc="Proudly serving Washington DC, Maryland, and Virginia." 
+                />
+                <FeatureCard 
+                  icon={<Star className='w-6 h-6' />} 
+                  title="Guaranteed" 
+                  desc="100% Satisfaction Guarantee. We aren't satisfied until you are." 
+                />
+              </div>
             </div>
-            <div className='relative group'>
-              <div className='absolute inset-0 bg-royal-green rounded-2xl rotate-3 opacity-20 group-hover:rotate-6 transition-transform duration-500'></div>
-              <div className='absolute inset-0 bg-royal-gold rounded-2xl -rotate-3 opacity-20 group-hover:-rotate-6 transition-transform duration-500'></div>
+            
+            {/* Right Image element with modern styling */}
+            <div className='relative group h-full flex items-center justify-center mt-10 lg:mt-0 z-20 px-2 sm:px-6 mb-4 sm:mb-8'>
+              {/* Thinner, responsive offset box */}
+              <div className='absolute inset-2 sm:inset-4 bg-gradient-to-br from-royal-gold to-orange-400 rounded-2xl transform translate-x-3 translate-y-3 sm:translate-x-4 sm:translate-y-4 transition-transform duration-500 group-hover:translate-x-4 group-hover:translate-y-4 sm:group-hover:translate-x-6 sm:group-hover:translate-y-6 opacity-80'></div>
               <img
                 src={cleanerImage}
                 alt='DMV Queen of Clean Professional'
-                className='relative rounded-2xl shadow-2xl w-full h-auto object-cover border-4 border-slate-800 transform transition-transform duration-500 group-hover:scale-[1.02]'
+                className='relative z-20 rounded-2xl shadow-xl w-full h-auto max-h-[600px] object-cover border-4 border-royal-dark transform transition-transform duration-500 hover:-translate-y-2 hover:shadow-2xl'
               />
             </div>
+            
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* --- Contact Section --- */}
-      <section id='contact' className='py-24 bg-green-50/50'>
+      <motion.section 
+        id='contact' 
+        className='py-24 bg-green-50/50'
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8 }}
+      >
         <div className='max-w-5xl mx-auto px-4 sm:px-6 lg:px-8'>
           <div className='bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row'>
             {/* Left/Top Side (Green Info) */}
@@ -584,7 +656,7 @@ const App = () => {
               <div className='absolute bottom-0 left-0 -ml-10 -mb-10 w-40 h-40 bg-royal-gold/20 rounded-full blur-2xl pointer-events-none'></div>
 
               <div className='relative z-10'>
-                <h2 className='text-3xl lg:text-4xl font-extrabold mb-2 tracking-tight'>
+                <h2 className='text-3xl lg:text-4xl font-serif font-extrabold mb-2 tracking-tight'>
                   Contact Us
                 </h2>
                 <div className='w-12 h-1 bg-royal-gold rounded-full mb-6 mx-auto lg:mx-0'></div>
@@ -715,7 +787,7 @@ const App = () => {
                 </div>
 
                 {/* Button with px-12 to give text room */}
-                <button className='w-full sm:w-auto sm:min-w-[200px] px-12 mx-auto bg-slate-900 hover:bg-black text-white font-bold py-4 rounded-full transition-all shadow-lg hover:shadow-xl mt-12 flex justify-center items-center gap-2 group text-xs sm:text-sm md:text-base'>
+                <button className='w-full sm:w-auto sm:min-w-[200px] px-12 mx-auto bg-royal-dark hover:bg-black text-white font-bold py-4 rounded-full transition-all shadow-lg hover:shadow-xl mt-12 flex justify-center items-center gap-2 group text-xs sm:text-sm md:text-base'>
                   Request Free Estimate
                   <ArrowRight className='w-4 h-4 group-hover:translate-x-1 transition-transform' />
                 </button>
@@ -723,9 +795,9 @@ const App = () => {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      <footer className='bg-slate-900 text-white pt-16 pb-8 relative overflow-hidden'>
+      <footer className='bg-royal-dark text-white pt-16 pb-8 relative overflow-hidden'>
         <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-royal-green via-teal-500 to-royal-gold'></div>
         <div
           className='absolute inset-0 opacity-[0.03]'
@@ -739,17 +811,19 @@ const App = () => {
           {/* Footer Grid */}
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-12 text-center lg:text-left'>
             <div className='space-y-4 flex flex-col items-center lg:items-start'>
-              <div className='flex items-center gap-2'>
-                <div className='bg-royal-green/20 p-2 rounded-lg border border-royal-green/30'>
-                  <Sparkles className='h-5 w-5 text-royal-green' />
-                </div>
-                <div>
-                  <h1 className='text-lg font-extrabold tracking-tight text-white leading-none'>
-                    DMV QUEEN
-                  </h1>
-                  <span className='text-[10px] font-bold text-royal-gold tracking-[0.2em] uppercase'>
-                    Of Clean
-                  </span>
+              <div className='flex items-center gap-3'>
+                <img src={logoImg} alt='DMV Queen Logo' className='h-12 w-auto drop-shadow-sm brightness-0 invert opacity-90' />
+                <div className='flex flex-col justify-center translate-y-0.5'>
+                  <div className='font-serif text-white tracking-wide leading-none flex items-baseline'>
+                    <span className='text-2xl font-semibold'>Q</span>
+                    <span className='text-lg font-semibold'>UEEN</span>
+                    <span className='text-sm italic px-1 font-medium'>of</span>
+                    <span className='text-2xl font-semibold'>C</span>
+                    <span className='text-lg font-semibold'>LEAN</span>
+                  </div>
+                  <div className='font-serif text-white/90 text-xs font-bold tracking-[0.3em] text-center mt-1 leading-none pl-1'>
+                    LLC
+                  </div>
                 </div>
               </div>
               <p className='text-slate-400 text-sm leading-relaxed max-w-xs'>
@@ -805,7 +879,7 @@ const App = () => {
                   href='#'
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-royal-green hover:text-white transition-all'
+                  className='w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-slate-300 hover:bg-royal-gold hover:text-white transition-all'
                 >
                   <Facebook className='w-5 h-5' />
                 </a>
@@ -813,7 +887,7 @@ const App = () => {
                   href='#'
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-royal-green hover:text-white transition-all'
+                  className='w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-slate-300 hover:bg-royal-gold hover:text-white transition-all'
                 >
                   <Instagram className='w-5 h-5' />
                 </a>
@@ -821,7 +895,7 @@ const App = () => {
                   href='#'
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-royal-green hover:text-white transition-all'
+                  className='w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-slate-300 hover:bg-royal-gold hover:text-white transition-all'
                 >
                   <Twitter className='w-5 h-5' />
                 </a>
@@ -832,7 +906,7 @@ const App = () => {
             </div>
           </div>
 
-          <div className='border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left'>
+          <div className='border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left'>
             <p className='text-slate-500 text-xs'>
               &copy; {new Date().getFullYear()} DMV Queen Of Clean, LLC. All
               Rights Reserved.
@@ -877,7 +951,7 @@ const ServiceCard = ({ title, desc, icon, image }) => (
         <div className='bg-white/20 backdrop-blur-md p-2 rounded-lg border border-white/30 shadow-sm'>
           {icon}
         </div>
-        <h3 className='text-xl font-bold text-white shadow-sm leading-tight'>
+        <h3 className='text-xl font-serif font-bold text-white shadow-sm leading-tight'>
           {title}
         </h3>
       </div>
@@ -898,6 +972,18 @@ const ListItem = ({ text }) => (
       {text}
     </span>
   </li>
+);
+
+const FeatureCard = ({ icon, title, desc }) => (
+  <div className='bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm hover:bg-white/10 transition-all duration-300 hover:-translate-y-1 flex flex-col items-start gap-4 group'>
+    <div className='p-3 bg-royal-gold/10 text-royal-gold rounded-xl group-hover:scale-110 group-hover:bg-royal-gold/20 transition-all'>
+      {icon}
+    </div>
+    <div>
+      <h3 className='text-lg font-serif font-bold text-white mb-2'>{title}</h3>
+      <p className='text-royal-beige/80 text-sm leading-relaxed'>{desc}</p>
+    </div>
+  </div>
 );
 
 export default App;

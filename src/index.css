@@ -1,12 +1,24 @@
 @import "tailwindcss";
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+@import '@fontsource/lato/300.css';
+@import '@fontsource/lato/400.css';
+@import '@fontsource/lato/700.css';
+@import '@fontsource/lato/900.css';
+
+@import '@fontsource/playfair-display/400.css';
+@import '@fontsource/playfair-display/600.css';
+@import '@fontsource/playfair-display/700.css';
+@import '@fontsource/playfair-display/800.css';
+@import '@fontsource/playfair-display/900.css';
 
 @theme {
-  --font-sans: 'Inter', sans-serif;
-  --color-royal-green: #059669;
-  --color-royal-dark: #064E3B;
-  --color-royal-gold: #F59E0B;
+  --font-sans: 'Lato', sans-serif;
+  --font-serif: 'Playfair Display', serif;
+  
+  --color-royal-green: #425f48;
+  --color-royal-dark: #2f4633;
+  --color-royal-gold: #dbad42;
+  --color-royal-beige: #faf6eb;
 }
 
 html {
@@ -15,5 +27,5 @@ html {
 
 body {
   font-family: var(--font-sans);
-  background-color: #f8fafc;
+  background-color: var(--color-royal-beige);
 }
