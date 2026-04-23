@@ -13,7 +13,7 @@ import {
   Sparkles,
   Star,
   Tag,
-  Twitter,
+
   X,
 } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -1243,7 +1243,7 @@ const App = () => {
               </h4>
               <div className='flex gap-4 mb-6 justify-center lg:justify-start'>
                 <a
-                  href='#'
+                  href='https://www.facebook.com/DMVQueenOfClean'
                   target='_blank'
                   rel='noopener noreferrer'
                   className='w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-slate-300 hover:bg-royal-gold hover:text-white transition-all'
@@ -1251,7 +1251,7 @@ const App = () => {
                   <Facebook className='w-5 h-5' />
                 </a>
                 <a
-                  href='#'
+                  href='https://www.instagram.com/dmvqueenofclean_llc/'
                   target='_blank'
                   rel='noopener noreferrer'
                   className='w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-slate-300 hover:bg-royal-gold hover:text-white transition-all'
@@ -1259,12 +1259,14 @@ const App = () => {
                   <Instagram className='w-5 h-5' />
                 </a>
                 <a
-                  href='#'
+                  href='https://www.tiktok.com/@dmvqueenofclean?_r=1&_t=ZP-95mpEAfWt82'
                   target='_blank'
                   rel='noopener noreferrer'
                   className='w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-slate-300 hover:bg-royal-gold hover:text-white transition-all'
                 >
-                  <Twitter className='w-5 h-5' />
+                  <svg className='w-5 h-5' viewBox='0 0 24 24' fill='currentColor' xmlns='http://www.w3.org/2000/svg'>
+                    <path d='M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V9.27a8.16 8.16 0 004.76 1.52v-3.4a4.85 4.85 0 01-1-.7z' />
+                  </svg>
                 </a>
               </div>
               <p className='text-slate-500 text-xs'>
