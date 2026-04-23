@@ -180,12 +180,12 @@ const App = () => {
     const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
     if (!siteKey) return;
     // Avoid loading multiple scripts
-    if (document.querySelector('script[src*="recaptcha/api.js"]')) {
-      if (window.grecaptcha) {
-        window.grecaptcha.ready(() => {
+    if (document.querySelector('script[src*="recaptcha/enterprise"]')) {
+      if (window.grecaptcha && window.grecaptcha.enterprise) {
+        window.grecaptcha.enterprise.ready(() => {
           const container = document.getElementById('recaptcha-container-dmv');
           if (container && !container.hasChildNodes()) {
-            recaptchaRef.current = window.grecaptcha.render('recaptcha-container-dmv', {
+            recaptchaRef.current = window.grecaptcha.enterprise.render('recaptcha-container-dmv', {
               sitekey: siteKey,
               callback: (token) => setCaptchaToken(token),
             });
@@ -195,14 +195,14 @@ const App = () => {
       return;
     }
     const script = document.createElement('script');
-    script.src = 'https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoad&render=explicit';
+    script.src = 'https://www.google.com/recaptcha/enterprise.js';
     script.async = true;
     script.defer = true;
-    window.onRecaptchaLoad = () => {
-      window.grecaptcha.ready(() => {
+    script.onload = () => {
+      window.grecaptcha.enterprise.ready(() => {
         const container = document.getElementById('recaptcha-container-dmv');
         if (container && !container.hasChildNodes()) {
-          recaptchaRef.current = window.grecaptcha.render('recaptcha-container-dmv', {
+          recaptchaRef.current = window.grecaptcha.enterprise.render('recaptcha-container-dmv', {
             sitekey: siteKey,
             callback: (token) => setCaptchaToken(token),
           });
