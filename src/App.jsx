@@ -16,7 +16,7 @@ import {
   Twitter,
   X,
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 // --- IMAGES ---
 import moveInImg from './assets/images/clean-apartment.webp'
@@ -129,12 +129,120 @@ const Modal = ({ isOpen, onClose, title, children }) => {
   );
 };
 
+// --- IMAGE RESIZE UTILITY ---
+const resizeImage = (file, maxDim = 800, quality = 0.6) => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let { width, height } = img;
+        if (width > height && width > maxDim) { height *= maxDim / width; width = maxDim; }
+        else if (height > maxDim) { width *= maxDim / height; height = maxDim; }
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+};
+
 const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Modal Logic
   const [activeModal, setActiveModal] = useState(null);
   const [successType, setSuccessType] = useState('contact');
+
+  // --- Contact Form State ---
+  const [formData, setFormData] = useState({
+    firstName: '', lastName: '', email: '', serviceType: 'Residential Cleaning', message: '', phone: '',
+  });
+  const [images, setImages] = useState([]); // array of { file, preview, base64 }
+  const [formStatus, setFormStatus] = useState('idle'); // idle | loading | success | error
+  const [formError, setFormError] = useState('');
+
+  // --- Subscribe Form State ---
+  const [subEmail, setSubEmail] = useState('');
+  const [subName, setSubName] = useState('');
+  const [honeypot, setHoneypot] = useState('');
+
+  // --- reCAPTCHA ---
+  const recaptchaRef = useRef(null);
+  const [captchaToken, setCaptchaToken] = useState('');
+
+  useEffect(() => {
+    if (activeModal !== 'contact') return;
+    const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+    if (!siteKey) return;
+    // Avoid loading multiple scripts
+    if (document.querySelector('script[src*="recaptcha/enterprise"]')) {
+      if (window.grecaptcha && window.grecaptcha.enterprise) {
+        window.grecaptcha.enterprise.ready(() => {
+          const container = document.getElementById('recaptcha-container-dmv');
+          if (container && !container.hasChildNodes()) {
+            recaptchaRef.current = window.grecaptcha.enterprise.render('recaptcha-container-dmv', {
+              sitekey: siteKey,
+              callback: (token) => setCaptchaToken(token),
+            });
+          }
+        });
+      }
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://www.google.com/recaptcha/enterprise.js';
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      window.grecaptcha.enterprise.ready(() => {
+        const container = document.getElementById('recaptcha-container-dmv');
+        if (container && !container.hasChildNodes()) {
+          recaptchaRef.current = window.grecaptcha.enterprise.render('recaptcha-container-dmv', {
+            sitekey: siteKey,
+            callback: (token) => setCaptchaToken(token),
+          });
+        }
+      });
+    };
+    document.body.appendChild(script);
+  }, [activeModal]);
+
+  // --- Image Upload Handler ---
+  const handleImageUpload = useCallback(async (e) => {
+    const files = Array.from(e.target.files);
+    if (images.length + files.length > 5) {
+      setFormError('Maximum 5 images allowed');
+      return;
+    }
+    setFormError('');
+    const newImages = await Promise.all(
+      files.map(async (file) => {
+        const base64 = await resizeImage(file);
+        return { file, preview: URL.createObjectURL(file), base64 };
+      })
+    );
+    setImages((prev) => [...prev, ...newImages]);
+  }, [images.length]);
+
+  const removeImage = useCallback((index) => {
+    setImages((prev) => {
+      const updated = [...prev];
+      URL.revokeObjectURL(updated[index].preview);
+      updated.splice(index, 1);
+      return updated;
+    });
+  }, []);
+
+  // --- Form Field Handler ---
+  const handleFieldChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const openContact = () => {
     setActiveModal('contact');
@@ -146,13 +254,66 @@ const App = () => {
     setIsMenuOpen(false);
   };
 
-  const closeModal = () => setActiveModal(null);
+  const resetForms = () => {
+    setFormData({ firstName: '', lastName: '', email: '', serviceType: 'Residential Cleaning', message: '', phone: '' });
+    setImages([]);
+    setFormStatus('idle');
+    setFormError('');
+    setCaptchaToken('');
+    setSubEmail('');
+    setSubName('');
+    setHoneypot('');
+  };
 
-  // Handle Form Submits
-  const handleFormSubmit = (e, type) => {
+  const closeModal = () => {
+    setActiveModal(null);
+    resetForms();
+  };
+
+  // --- Contact Submit ---
+  const handleContactSubmit = async (e) => {
     e.preventDefault();
-    setSuccessType(type);
-    setActiveModal('success');
+    if (!captchaToken) { setFormError('Please complete the CAPTCHA'); return; }
+    setFormStatus('loading');
+    setFormError('');
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/feedback`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          images: images.map((img) => img.base64),
+          'g-recaptcha-response': captchaToken,
+        }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Failed to send');
+      setFormStatus('success');
+      setActiveModal('success');
+      setSuccessType('contact');
+    } catch (err) {
+      setFormError(err.message);
+      setFormStatus('error');
+    }
+  };
+
+  // --- Subscribe Submit ---
+  const handleSubscribeSubmit = async (e) => {
+    e.preventDefault();
+    setFormStatus('loading');
+    setFormError('');
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/subscribe`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: subEmail, name: subName, website: honeypot }),
+      });
+      if (!res.ok) throw new Error('Failed');
+      setActiveModal('success');
+      setSuccessType('subscribe');
+    } catch (err) {
+      setFormError(err.message);
+      setFormStatus('error');
+    }
   };
 
   return (
@@ -170,7 +331,7 @@ const App = () => {
         </p>
         <form
           className='space-y-4'
-          onSubmit={(e) => handleFormSubmit(e, 'contact')}
+          onSubmit={handleContactSubmit}
         >
           <div className='grid grid-cols-2 gap-3 md:gap-4'>
             <div>
@@ -179,6 +340,9 @@ const App = () => {
               </label>
               <input
                 type='text'
+                name='firstName'
+                value={formData.firstName}
+                onChange={handleFieldChange}
                 className='w-full px-4 py-3 md:px-5 text-sm md:text-base bg-slate-50 border border-slate-200 rounded-full focus:ring-2 focus:ring-royal-green focus:border-transparent outline-none transition-all'
                 placeholder='Jane'
                 required
@@ -190,6 +354,9 @@ const App = () => {
               </label>
               <input
                 type='text'
+                name='lastName'
+                value={formData.lastName}
+                onChange={handleFieldChange}
                 className='w-full px-4 py-3 md:px-5 text-sm md:text-base bg-slate-50 border border-slate-200 rounded-full focus:ring-2 focus:ring-royal-green focus:border-transparent outline-none transition-all'
                 placeholder='Doe'
               />
@@ -201,6 +368,9 @@ const App = () => {
             </label>
             <input
               type='email'
+              name='email'
+              value={formData.email}
+              onChange={handleFieldChange}
               className='w-full px-4 py-3 md:px-5 text-sm md:text-base bg-slate-50 border border-slate-200 rounded-full focus:ring-2 focus:ring-royal-green focus:border-transparent outline-none transition-all'
               placeholder='jane@example.com'
               required
@@ -208,10 +378,28 @@ const App = () => {
           </div>
           <div>
             <label className='block text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 px-1'>
+              Phone (optional)
+            </label>
+            <input
+              type='tel'
+              name='phone'
+              value={formData.phone}
+              onChange={handleFieldChange}
+              className='w-full px-4 py-3 md:px-5 text-sm md:text-base bg-slate-50 border border-slate-200 rounded-full focus:ring-2 focus:ring-royal-green focus:border-transparent outline-none transition-all'
+              placeholder='(202) 555-0100'
+            />
+          </div>
+          <div>
+            <label className='block text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 px-1'>
               Service Type
             </label>
             <div className='relative'>
-              <select className='w-full px-4 py-3 md:px-5 text-sm md:text-base bg-slate-50 border border-slate-200 rounded-full focus:ring-2 focus:ring-royal-green focus:border-transparent outline-none appearance-none cursor-pointer'>
+              <select
+                name='serviceType'
+                value={formData.serviceType}
+                onChange={handleFieldChange}
+                className='w-full px-4 py-3 md:px-5 text-sm md:text-base bg-slate-50 border border-slate-200 rounded-full focus:ring-2 focus:ring-royal-green focus:border-transparent outline-none appearance-none cursor-pointer'
+              >
                 <option>Residential Cleaning</option>
                 <option>Commercial Cleaning</option>
                 <option>Move-In / Move-Out</option>
@@ -219,10 +407,81 @@ const App = () => {
               <ArrowRight className='absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 rotate-90 pointer-events-none' />
             </div>
           </div>
+          <div>
+            <label className='block text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 px-1'>
+              Message / Details
+            </label>
+            <textarea
+              name='message'
+              value={formData.message}
+              onChange={handleFieldChange}
+              rows={3}
+              className='w-full px-4 py-3 md:px-5 text-sm md:text-base bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-royal-green focus:border-transparent outline-none transition-all resize-none'
+              placeholder='Tell us about your space, special requests, preferred schedule...'
+            />
+          </div>
 
-          <button className='w-1/2 mx-auto bg-royal-green hover:bg-royal-dark text-white font-bold py-3 md:py-4 rounded-full transition-all shadow-lg hover:shadow-xl flex justify-center items-center gap-2 mt-4 text-sm md:text-base'>
-            Send Request
-            <ArrowRight className='w-4 h-4' />
+          {/* Image Upload */}
+          <div>
+            <label className='block text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 px-1'>
+              Upload Photos (optional, max 5)
+            </label>
+            <label className='flex items-center justify-center gap-2 w-full px-4 py-3 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl cursor-pointer hover:border-royal-green/50 hover:bg-slate-100 transition-all text-sm text-slate-500'>
+              <ArrowRight className='w-4 h-4 -rotate-90' />
+              <span>Choose images...</span>
+              <input
+                type='file'
+                accept='image/*'
+                multiple
+                onChange={handleImageUpload}
+                className='hidden'
+              />
+            </label>
+            {images.length > 0 && (
+              <div className='flex flex-wrap gap-2 mt-3'>
+                {images.map((img, i) => (
+                  <div key={i} className='relative group/thumb'>
+                    <img src={img.preview} alt={`Upload ${i + 1}`} className='w-16 h-16 object-cover rounded-xl border border-slate-200' />
+                    <button
+                      type='button'
+                      onClick={() => removeImage(i)}
+                      className='absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover/thumb:opacity-100 transition-opacity shadow-sm'
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* reCAPTCHA */}
+          <div id='recaptcha-container-dmv' className='flex justify-center my-4'></div>
+
+          {/* Error Message */}
+          {formError && (
+            <p className='text-red-500 text-sm text-center'>{formError}</p>
+          )}
+
+          <button
+            type='submit'
+            disabled={formStatus === 'loading'}
+            className='w-1/2 mx-auto bg-royal-green hover:bg-royal-dark text-white font-bold py-3 md:py-4 rounded-full transition-all shadow-lg hover:shadow-xl flex justify-center items-center gap-2 mt-4 text-sm md:text-base disabled:opacity-60 disabled:cursor-not-allowed'
+          >
+            {formStatus === 'loading' ? (
+              <>
+                <svg className='animate-spin w-4 h-4' viewBox='0 0 24 24' fill='none'>
+                  <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
+                  <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z' />
+                </svg>
+                Sending...
+              </>
+            ) : (
+              <>
+                Send Request
+                <ArrowRight className='w-4 h-4' />
+              </>
+            )}
           </button>
         </form>
       </Modal>
@@ -240,21 +499,59 @@ const App = () => {
         </p>
         <form
           className='space-y-4'
-          onSubmit={(e) => handleFormSubmit(e, 'subscribe')}
+          onSubmit={handleSubscribeSubmit}
         >
+          {/* Honeypot field */}
+          <input name='website' value={honeypot} onChange={(e) => setHoneypot(e.target.value)} style={{ position: 'absolute', left: '-9999px' }} tabIndex={-1} autoComplete='off' />
+
+          <div>
+            <label className='block text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 px-1'>
+              Your Name
+            </label>
+            <input
+              type='text'
+              value={subName}
+              onChange={(e) => setSubName(e.target.value)}
+              className='w-full px-4 py-3 md:px-5 text-sm md:text-base bg-slate-50 border border-slate-200 rounded-full focus:ring-2 focus:ring-royal-green focus:border-transparent outline-none transition-all'
+              placeholder='Jane Doe'
+            />
+          </div>
           <div className='relative'>
             <Mail className='absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5' />
             <input
               type='email'
+              value={subEmail}
+              onChange={(e) => setSubEmail(e.target.value)}
               placeholder='Enter your email address'
               className='pl-12 pr-5 py-3 md:py-4 w-full bg-slate-50 border border-slate-200 rounded-full focus:ring-2 focus:ring-royal-green focus:border-transparent outline-none transition-all text-sm md:text-base'
               required
             />
           </div>
 
-          <button className='w-1/2 mx-auto bg-gradient-to-r from-royal-green to-teal-600 hover:to-royal-green text-white font-bold py-3 md:py-4 rounded-full transition-all shadow-lg hover:shadow-xl flex justify-center items-center gap-2 text-sm md:text-base'>
-            Claim Offer
-            <Tag className='w-4 h-4' />
+          {/* Error Message */}
+          {formError && (
+            <p className='text-red-500 text-sm text-center'>{formError}</p>
+          )}
+
+          <button
+            type='submit'
+            disabled={formStatus === 'loading'}
+            className='w-1/2 mx-auto bg-gradient-to-r from-royal-green to-teal-600 hover:to-royal-green text-white font-bold py-3 md:py-4 rounded-full transition-all shadow-lg hover:shadow-xl flex justify-center items-center gap-2 text-sm md:text-base disabled:opacity-60 disabled:cursor-not-allowed'
+          >
+            {formStatus === 'loading' ? (
+              <>
+                <svg className='animate-spin w-4 h-4' viewBox='0 0 24 24' fill='none'>
+                  <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
+                  <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z' />
+                </svg>
+                Subscribing...
+              </>
+            ) : (
+              <>
+                Claim Offer
+                <Tag className='w-4 h-4' />
+              </>
+            )}
           </button>
 
           <p className='text-[10px] md:text-xs text-center text-slate-400 mt-4'>
@@ -551,19 +848,26 @@ const App = () => {
             <div className='w-full md:w-1/2 lg:w-auto mx-auto lg:mx-0'>
               <form
                 className='flex w-full lg:w-auto flex-col sm:flex-row gap-3'
-                onSubmit={(e) => handleFormSubmit(e, 'subscribe')}
+                onSubmit={handleSubscribeSubmit}
               >
+                <input name='website' value={honeypot} onChange={(e) => setHoneypot(e.target.value)} style={{ position: 'absolute', left: '-9999px' }} tabIndex={-1} autoComplete='off' />
                 <div className='relative w-full'>
                   <Mail className='absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5' />
                   <input
                     type='email'
+                    value={subEmail}
+                    onChange={(e) => setSubEmail(e.target.value)}
                     placeholder='Enter your email address'
                     className='pl-12 pr-5 py-4 w-full lg:w-80 bg-slate-50 border border-slate-200 rounded-full focus:ring-2 focus:ring-royal-green focus:border-transparent outline-none transition-all text-sm md:text-base'
                     required
                   />
                 </div>
-                <button className='w-full sm:w-auto bg-royal-green hover:bg-royal-dark text-white px-10 py-4 rounded-full font-bold transition-all shadow-lg shadow-royal-green/20 hover:shadow-royal-green/40 whitespace-nowrap active:scale-95 text-sm md:text-base'>
-                  Sign Up
+                <button
+                  type='submit'
+                  disabled={formStatus === 'loading'}
+                  className='w-full sm:w-auto bg-royal-green hover:bg-royal-dark text-white px-10 py-4 rounded-full font-bold transition-all shadow-lg shadow-royal-green/20 hover:shadow-royal-green/40 whitespace-nowrap active:scale-95 text-sm md:text-base disabled:opacity-60 disabled:cursor-not-allowed'
+                >
+                  {formStatus === 'loading' ? 'Sending...' : 'Sign Up'}
                 </button>
               </form>
             </div>
@@ -734,7 +1038,7 @@ const App = () => {
             <div className='p-8 m-auto md:p-12 lg:w-3/5 bg-white'>
               <form
                 className='space-y-5'
-                onSubmit={(e) => handleFormSubmit(e, 'contact')}
+                onSubmit={handleContactSubmit}
               >
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-5'>
                   <div>
@@ -743,6 +1047,9 @@ const App = () => {
                     </label>
                     <input
                       type='text'
+                      name='firstName'
+                      value={formData.firstName}
+                      onChange={handleFieldChange}
                       className='w-full px-4 md:px-5 py-4 border border-slate-200 bg-slate-50 rounded-full focus:ring-2 focus:ring-royal-green focus:border-transparent outline-none transition-all text-sm md:text-base'
                       placeholder='Jane'
                       required
@@ -754,6 +1061,9 @@ const App = () => {
                     </label>
                     <input
                       type='text'
+                      name='lastName'
+                      value={formData.lastName}
+                      onChange={handleFieldChange}
                       className='w-full px-4 md:px-5 py-4 border border-slate-200 bg-slate-50 rounded-full focus:ring-2 focus:ring-royal-green focus:border-transparent outline-none transition-all text-sm md:text-base'
                       placeholder='Doe'
                     />
@@ -766,6 +1076,9 @@ const App = () => {
                   </label>
                   <input
                     type='email'
+                    name='email'
+                    value={formData.email}
+                    onChange={handleFieldChange}
                     className='w-full px-4 md:px-5 py-4 border border-slate-200 bg-slate-50 rounded-full focus:ring-2 focus:ring-royal-green focus:border-transparent outline-none transition-all text-sm md:text-base'
                     placeholder='jane@example.com'
                     required
@@ -774,10 +1087,29 @@ const App = () => {
 
                 <div>
                   <label className='block text-xs md:text-sm font-bold text-slate-700 mb-1 px-1'>
+                    Phone (optional)
+                  </label>
+                  <input
+                    type='tel'
+                    name='phone'
+                    value={formData.phone}
+                    onChange={handleFieldChange}
+                    className='w-full px-4 md:px-5 py-4 border border-slate-200 bg-slate-50 rounded-full focus:ring-2 focus:ring-royal-green focus:border-transparent outline-none transition-all text-sm md:text-base'
+                    placeholder='(202) 555-0100'
+                  />
+                </div>
+
+                <div>
+                  <label className='block text-xs md:text-sm font-bold text-slate-700 mb-1 px-1'>
                     Service Needed
                   </label>
                   <div className='relative'>
-                    <select className='w-full px-4 md:px-5 py-4 border border-slate-200 bg-slate-50 rounded-full focus:ring-2 focus:ring-royal-green focus:border-transparent outline-none appearance-none transition-all text-sm md:text-base'>
+                    <select
+                      name='serviceType'
+                      value={formData.serviceType}
+                      onChange={handleFieldChange}
+                      className='w-full px-4 md:px-5 py-4 border border-slate-200 bg-slate-50 rounded-full focus:ring-2 focus:ring-royal-green focus:border-transparent outline-none appearance-none transition-all text-sm md:text-base'
+                    >
                       <option>Residential Cleaning</option>
                       <option>Commercial Cleaning</option>
                       <option>Move-In / Move-Out</option>
@@ -786,10 +1118,45 @@ const App = () => {
                   </div>
                 </div>
 
+                <div>
+                  <label className='block text-xs md:text-sm font-bold text-slate-700 mb-1 px-1'>
+                    Message / Details
+                  </label>
+                  <textarea
+                    name='message'
+                    value={formData.message}
+                    onChange={handleFieldChange}
+                    rows={3}
+                    className='w-full px-4 md:px-5 py-4 border border-slate-200 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-royal-green focus:border-transparent outline-none transition-all text-sm md:text-base resize-none'
+                    placeholder='Tell us about your space, special requests, preferred schedule...'
+                  />
+                </div>
+
+                {/* Error Message */}
+                {formError && (
+                  <p className='text-red-500 text-sm text-center'>{formError}</p>
+                )}
+
                 {/* Button with px-12 to give text room */}
-                <button className='w-full sm:w-auto sm:min-w-[200px] px-12 mx-auto bg-royal-dark hover:bg-black text-white font-bold py-4 rounded-full transition-all shadow-lg hover:shadow-xl mt-12 flex justify-center items-center gap-2 group text-xs sm:text-sm md:text-base'>
-                  Request Free Estimate
-                  <ArrowRight className='w-4 h-4 group-hover:translate-x-1 transition-transform' />
+                <button
+                  type='submit'
+                  disabled={formStatus === 'loading'}
+                  className='w-full sm:w-auto sm:min-w-[200px] px-12 mx-auto bg-royal-dark hover:bg-black text-white font-bold py-4 rounded-full transition-all shadow-lg hover:shadow-xl mt-12 flex justify-center items-center gap-2 group text-xs sm:text-sm md:text-base disabled:opacity-60 disabled:cursor-not-allowed'
+                >
+                  {formStatus === 'loading' ? (
+                    <>
+                      <svg className='animate-spin w-4 h-4' viewBox='0 0 24 24' fill='none'>
+                        <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
+                        <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z' />
+                      </svg>
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      Request Free Estimate
+                      <ArrowRight className='w-4 h-4 group-hover:translate-x-1 transition-transform' />
+                    </>
+                  )}
                 </button>
               </form>
             </div>
