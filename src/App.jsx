@@ -305,7 +305,7 @@ const App = () => {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/subscribe`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: subEmail, name: subName, website: honeypot }),
+        body: JSON.stringify({ email: subEmail, name: subName, website: honeypot, discountCode: 'ROYAL10' }),
       });
       if (!res.ok) throw new Error('Failed');
       setActiveModal('success');
@@ -445,7 +445,7 @@ const App = () => {
                     <button
                       type='button'
                       onClick={() => removeImage(i)}
-                      className='absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-100 lg:opacity-0 lg:group-hover/thumb:opacity-100 transition-opacity shadow-sm'
+                      className='absolute -top-2 -right-2 w-5 h-5 bg-royal-gold text-white rounded-full text-xs flex items-center justify-center opacity-100 lg:opacity-0 lg:group-hover/thumb:opacity-100 transition-opacity shadow-sm'
                     >
                       ×
                     </button>
@@ -947,8 +947,7 @@ const App = () => {
         <div className='max-w-5xl mx-auto px-4 sm:px-6 lg:px-8'>
           <div className='bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row'>
             {/* Left/Top Side (Green Info) */}
-            {/* Reduced padding for mobile/tablet (p-6/p-8) vs desktop (p-12) */}
-            <div className='relative p-6 md:p-8 lg:p-12 lg:w-2/5 flex flex-col justify-between overflow-hidden bg-gradient-to-br from-royal-green to-[#065f46] text-white text-center lg:text-left'>
+            <div className='relative p-6 md:p-8 lg:p-12 lg:w-2/5 flex flex-col justify-between overflow-hidden bg-gradient-to-br from-royal-green to-[#065f46] text-white'>
               <div
                 className='absolute inset-0 opacity-10 pointer-events-none'
                 style={{
@@ -960,74 +959,73 @@ const App = () => {
               <div className='absolute bottom-0 left-0 -ml-10 -mb-10 w-40 h-40 bg-royal-gold/20 rounded-full blur-2xl pointer-events-none'></div>
 
               <div className='relative z-10'>
-                <h2 className='text-3xl lg:text-4xl font-serif font-extrabold mb-2 tracking-tight'>
+                <h2 className='text-2xl md:text-3xl lg:text-4xl font-serif font-extrabold mb-2 tracking-tight text-center lg:text-left'>
                   Contact Us
                 </h2>
-                <div className='w-12 h-1 bg-royal-gold rounded-full mb-6 mx-auto lg:mx-0'></div>
+                <div className='w-12 h-1 bg-royal-gold rounded-full mb-4 lg:mb-6 mx-auto lg:mx-0'></div>
 
-                {/* Reduced margin-bottom on mobile */}
-                <p className='mb-6 lg:mb-10 text-green-50 text-base md:text-lg leading-relaxed font-light'>
+                <p className='mb-5 lg:mb-10 text-green-50 text-sm md:text-base lg:text-lg leading-relaxed font-light text-center lg:text-left'>
                   Ready for a spotless space? Reach out today for your free
                   royal estimate.
                 </p>
 
-                {/* Reduced vertical spacing between items on mobile */}
-                <div className='space-y-4 lg:space-y-8'>
-                  <div className='flex flex-col items-center lg:flex-row lg:items-start gap-5 group'>
-                    <div className='w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center flex-shrink-0 border border-white/10 shadow-lg group-hover:bg-white/20 transition-all duration-300'>
-                      <Phone className='w-5 h-5 text-royal-gold' />
-                    </div>
-                    <div>
-                      <p className='text-xs font-bold text-green-200 uppercase tracking-wider mb-1'>
-                        Call Us
-                      </p>
-                      <a
-                        href='tel:2025698373'
-                        className='font-bold text-lg md:text-xl tracking-tight hover:text-royal-gold transition-colors'
-                      >
-                        202-569-8373
-                      </a>
-                    </div>
-                  </div>
+                {/* Contact info — 3-col grid on tablet, stacked rows on mobile, list on desktop */}
+                {/* Mobile: centered fit-content column. Tablet: 3-col grid. Desktop: left-aligned list */}
+                <div className='flex justify-center md:block'>
+                  <div className='flex flex-col gap-3 md:grid md:grid-cols-3 lg:grid-cols-1 lg:gap-5'>
+                    <a href='tel:2025698373' className='flex items-center gap-3 lg:gap-4 bg-white/5 md:bg-white/10 rounded-xl px-4 py-3 lg:p-0 lg:bg-transparent lg:rounded-none group hover:bg-white/15 lg:hover:bg-transparent transition-all'>
+                      <div className='w-9 h-9 lg:w-12 lg:h-12 bg-white/10 backdrop-blur-md rounded-lg lg:rounded-2xl flex items-center justify-center flex-shrink-0 border border-white/10 shadow-lg group-hover:bg-white/20 transition-all duration-300'>
+                        <Phone className='w-4 h-4 lg:w-5 lg:h-5 text-royal-gold' />
+                      </div>
+                      <div className='text-left'>
+                        <p className='text-[9px] lg:text-xs font-bold text-green-200 uppercase tracking-wider leading-tight'>
+                          Call Us
+                        </p>
+                        <span className='font-bold text-sm lg:text-xl tracking-tight group-hover:text-royal-gold transition-colors'>
+                          202-569-8373
+                        </span>
+                      </div>
+                    </a>
 
-                  <div className='flex flex-col items-center lg:flex-row lg:items-start gap-5 group'>
-                    <div className='w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center flex-shrink-0 border border-white/10 shadow-lg group-hover:bg-white/20 transition-all duration-300'>
-                      <MapPin className='w-5 h-5 text-royal-gold' />
+                    <div className='flex items-center gap-3 lg:gap-4 bg-white/5 md:bg-white/10 rounded-xl px-4 py-3 lg:p-0 lg:bg-transparent lg:rounded-none group hover:bg-white/15 lg:hover:bg-transparent transition-all'>
+                      <div className='w-9 h-9 lg:w-12 lg:h-12 bg-white/10 backdrop-blur-md rounded-lg lg:rounded-2xl flex items-center justify-center flex-shrink-0 border border-white/10 shadow-lg group-hover:bg-white/20 transition-all duration-300'>
+                        <MapPin className='w-4 h-4 lg:w-5 lg:h-5 text-royal-gold' />
+                      </div>
+                      <div className='text-left'>
+                        <p className='text-[9px] lg:text-xs font-bold text-green-200 uppercase tracking-wider leading-tight'>
+                          Service Area
+                        </p>
+                        <span className='font-medium text-sm lg:text-lg'>
+                          DC, MD & VA
+                        </span>
+                      </div>
                     </div>
-                    <div>
-                      <p className='text-xs font-bold text-green-200 uppercase tracking-wider mb-1'>
-                        Service Area
-                      </p>
-                      <span className='font-medium text-base md:text-lg'>
-                        Washington DC, MD & VA
-                      </span>
-                    </div>
-                  </div>
 
-                  <div className='flex flex-col items-center lg:flex-row lg:items-start gap-5 group'>
-                    <div className='w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center flex-shrink-0 border border-white/10 shadow-lg group-hover:bg-white/20 transition-all duration-300'>
-                      <Mail className='w-5 h-5 text-royal-gold' />
-                    </div>
-                    <div className='overflow-hidden'>
-                      <p className='text-xs font-bold text-green-200 uppercase tracking-wider mb-1'>
-                        Email Us
-                      </p>
-                      <span className='font-medium text-base md:text-lg break-all'>
-                        dmvqueenofclean@gmail.com
-                      </span>
+                    <div className='flex items-center gap-3 lg:gap-4 bg-white/5 md:bg-white/10 rounded-xl px-4 py-3 lg:p-0 lg:bg-transparent lg:rounded-none group hover:bg-white/15 lg:hover:bg-transparent transition-all'>
+                      <div className='w-9 h-9 lg:w-12 lg:h-12 bg-white/10 backdrop-blur-md rounded-lg lg:rounded-2xl flex items-center justify-center flex-shrink-0 border border-white/10 shadow-lg group-hover:bg-white/20 transition-all duration-300'>
+                        <Mail className='w-4 h-4 lg:w-5 lg:h-5 text-royal-gold' />
+                      </div>
+                      <div className='text-left overflow-hidden'>
+                        <p className='text-[9px] lg:text-xs font-bold text-green-200 uppercase tracking-wider leading-tight'>
+                          Email Us
+                        </p>
+                        <span className='font-medium text-xs lg:text-lg'>
+                          dmvqueenofclean@gmail.com
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Reduced margin-top for bottom section */}
-              <div className='relative z-10 mt-8 lg:mt-12 pt-8 border-t border-white/10'>
-                <div className='flex items-center justify-center lg:justify-start gap-3'>
-                  <span className='relative flex h-2.5 w-2.5'>
+              {/* Business hours */}
+              <div className='relative z-10 mt-5 lg:mt-12 pt-4 lg:pt-8 border-t border-white/10'>
+                <div className='flex items-center justify-center lg:justify-start gap-2'>
+                  <span className='relative flex h-2 w-2 lg:h-2.5 lg:w-2.5'>
                     <span className='animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75'></span>
-                    <span className='relative inline-flex rounded-full h-2.5 w-2.5 bg-green-400'></span>
+                    <span className='relative inline-flex rounded-full h-2 w-2 lg:h-2.5 lg:w-2.5 bg-green-400'></span>
                   </span>
-                  <p className='text-xs md:text-sm font-medium text-green-50 tracking-wide'>
+                  <p className='text-xs font-medium text-green-50 tracking-wide'>
                     Monday - Saturday: 8am - 6pm
                   </p>
                 </div>
@@ -1132,6 +1130,40 @@ const App = () => {
                   />
                 </div>
 
+                {/* Image Upload */}
+                <div>
+                  <label className='block text-xs md:text-sm font-bold text-slate-700 mb-1 px-1'>
+                    Upload Photos (optional, max 5)
+                  </label>
+                  <label className='flex items-center justify-center gap-2 w-full px-4 py-3 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl cursor-pointer hover:border-royal-green/50 hover:bg-slate-100 transition-all text-sm text-slate-500'>
+                    <ArrowRight className='w-4 h-4 -rotate-90' />
+                    <span>Choose images...</span>
+                    <input
+                      type='file'
+                      accept='image/*'
+                      multiple
+                      onChange={handleImageUpload}
+                      className='hidden'
+                    />
+                  </label>
+                  {images.length > 0 && (
+                    <div className='flex flex-wrap gap-2 mt-3'>
+                      {images.map((img, i) => (
+                        <div key={i} className='relative group/thumb'>
+                          <img src={img.preview} alt={`Upload ${i + 1}`} className='w-16 h-16 object-cover rounded-xl border border-slate-200' />
+                          <button
+                            type='button'
+                            onClick={() => removeImage(i)}
+                            className='absolute -top-2 -right-2 w-5 h-5 bg-royal-gold text-white rounded-full text-xs flex items-center justify-center opacity-100 lg:opacity-0 lg:group-hover/thumb:opacity-100 transition-opacity shadow-sm'
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 {/* Error Message */}
                 {formError && (
                   <p className='text-red-500 text-sm text-center'>{formError}</p>
@@ -1176,40 +1208,42 @@ const App = () => {
 
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10'>
           {/* Footer Grid */}
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-12 text-center lg:text-left'>
-            <div className='space-y-4 flex flex-col items-center lg:items-start'>
+          <div className='grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12 mb-10 md:mb-12'>
+            {/* Brand — full width on mobile */}
+            <div className='col-span-2 md:col-span-1 flex flex-col items-center md:items-start text-center md:text-left gap-3'>
               <div className='flex items-center gap-3'>
-                <img src={logoImg} alt='DMV Queen Logo' className='h-12 w-auto drop-shadow-sm brightness-0 invert opacity-90' />
+                <img src={logoImg} alt='DMV Queen Logo' className='h-10 md:h-12 w-auto drop-shadow-sm brightness-0 invert opacity-90' />
                 <div className='flex flex-col justify-center translate-y-0.5'>
                   <div className='font-serif text-white tracking-wide leading-none flex items-baseline'>
-                    <span className='text-2xl font-semibold'>Q</span>
-                    <span className='text-lg font-semibold'>UEEN</span>
-                    <span className='text-sm italic px-1 font-medium'>of</span>
-                    <span className='text-2xl font-semibold'>C</span>
-                    <span className='text-lg font-semibold'>LEAN</span>
+                    <span className='text-xl md:text-2xl font-semibold'>Q</span>
+                    <span className='text-base md:text-lg font-semibold'>UEEN</span>
+                    <span className='text-xs md:text-sm italic px-1 font-medium'>of</span>
+                    <span className='text-xl md:text-2xl font-semibold'>C</span>
+                    <span className='text-base md:text-lg font-semibold'>LEAN</span>
                   </div>
-                  <div className='font-serif text-white/90 text-xs font-bold tracking-[0.3em] text-center mt-1 leading-none pl-1'>
+                  <div className='font-serif text-white/90 text-[10px] md:text-xs font-bold tracking-[0.3em] text-center mt-0.5 leading-none pl-1'>
                     LLC
                   </div>
                 </div>
               </div>
-              <p className='text-slate-400 text-sm leading-relaxed max-w-xs'>
+              <p className='text-slate-400 text-xs md:text-sm leading-relaxed max-w-xs'>
                 Bringing royalty standard cleaning to homes and businesses
                 across Washington DC, Maryland, and Virginia.
               </p>
             </div>
 
-            <div>
-              <h4 className='font-bold text-white mb-6 tracking-wide uppercase text-sm'>
+            {/* Quick Links */}
+            <div className='text-center md:text-left'>
+              <h4 className='font-bold text-white mb-4 md:mb-6 tracking-wide uppercase text-xs md:text-sm'>
                 Quick Links
               </h4>
-              <ul className='space-y-3 text-sm text-slate-400'>
+              <ul className='space-y-2 md:space-y-3 text-xs md:text-sm text-slate-400'>
                 <li>
                   <button
                     onClick={() =>
                       window.scrollTo({ top: 0, behavior: 'smooth' })
                     }
-                    className='hover:text-royal-gold transition-colors flex items-center justify-center lg:justify-start gap-2 group w-full'
+                    className='hover:text-royal-gold transition-colors inline-flex items-center gap-2 group'
                   >
                     <span className='w-1.5 h-1.5 bg-royal-green rounded-full opacity-0 group-hover:opacity-100 transition-opacity'></span>
                     Home
@@ -1218,7 +1252,7 @@ const App = () => {
                 <li>
                   <button
                     onClick={openContact}
-                    className='hover:text-royal-gold transition-colors flex items-center justify-center lg:justify-start gap-2 group w-full'
+                    className='hover:text-royal-gold transition-colors inline-flex items-center gap-2 group'
                   >
                     <span className='w-1.5 h-1.5 bg-royal-green rounded-full opacity-0 group-hover:opacity-100 transition-opacity'></span>
                     Get an Estimate
@@ -1227,7 +1261,7 @@ const App = () => {
                 <li>
                   <button
                     onClick={openSubscribe}
-                    className='hover:text-royal-gold transition-colors flex items-center justify-center lg:justify-start gap-2 group w-full'
+                    className='hover:text-royal-gold transition-colors inline-flex items-center gap-2 group'
                   >
                     <span className='w-1.5 h-1.5 bg-royal-green rounded-full opacity-0 group-hover:opacity-100 transition-opacity'></span>
                     Special Offers
@@ -1236,51 +1270,51 @@ const App = () => {
               </ul>
             </div>
 
-            {/* Connect (Socials) - Centered in 2nd row on tablet */}
-            <div className='md:col-span-2 lg:col-span-1'>
-              <h4 className='font-bold text-white mb-6 tracking-wide uppercase text-sm'>
+            {/* Connect (Socials) */}
+            <div className='text-center md:text-left'>
+              <h4 className='font-bold text-white mb-4 md:mb-6 tracking-wide uppercase text-xs md:text-sm'>
                 Connect With Us
               </h4>
-              <div className='flex gap-4 mb-6 justify-center lg:justify-start'>
+              <div className='flex gap-3 mb-4 md:mb-6 justify-center md:justify-start'>
                 <a
                   href='https://www.facebook.com/DMVQueenOfClean'
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-slate-300 hover:bg-royal-gold hover:text-white transition-all'
+                  className='w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/10 flex items-center justify-center text-slate-300 hover:bg-royal-gold hover:text-white transition-all'
                 >
-                  <Facebook className='w-5 h-5' />
+                  <Facebook className='w-4 h-4 md:w-5 md:h-5' />
                 </a>
                 <a
                   href='https://www.instagram.com/dmvqueenofclean_llc/'
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-slate-300 hover:bg-royal-gold hover:text-white transition-all'
+                  className='w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/10 flex items-center justify-center text-slate-300 hover:bg-royal-gold hover:text-white transition-all'
                 >
-                  <Instagram className='w-5 h-5' />
+                  <Instagram className='w-4 h-4 md:w-5 md:h-5' />
                 </a>
                 <a
                   href='https://www.tiktok.com/@dmvqueenofclean?_r=1&_t=ZP-95mpEAfWt82'
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-slate-300 hover:bg-royal-gold hover:text-white transition-all'
+                  className='w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/10 flex items-center justify-center text-slate-300 hover:bg-royal-gold hover:text-white transition-all'
                 >
-                  <svg className='w-5 h-5' viewBox='0 0 24 24' fill='currentColor' xmlns='http://www.w3.org/2000/svg'>
+                  <svg className='w-4 h-4 md:w-5 md:h-5' viewBox='0 0 24 24' fill='currentColor' xmlns='http://www.w3.org/2000/svg'>
                     <path d='M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V9.27a8.16 8.16 0 004.76 1.52v-3.4a4.85 4.85 0 01-1-.7z' />
                   </svg>
                 </a>
               </div>
-              <p className='text-slate-500 text-xs'>
-                Business Hours: Mon - Sat, 8am - 6pm
+              <p className='text-slate-500 text-[11px] md:text-xs'>
+                Mon - Sat, 8am - 6pm
               </p>
             </div>
           </div>
 
-          <div className='border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left'>
-            <p className='text-slate-500 text-xs'>
+          <div className='border-t border-white/10 pt-6 md:pt-8 flex flex-col sm:flex-row justify-between items-center gap-3 md:gap-4'>
+            <p className='text-slate-500 text-[11px] md:text-xs'>
               &copy; {new Date().getFullYear()} DMV Queen Of Clean, LLC. All
               Rights Reserved.
             </p>
-            <div className='flex gap-6 text-xs text-slate-500 justify-center md:justify-start w-full md:w-auto'>
+            <div className='flex gap-4 md:gap-6 text-[11px] md:text-xs text-slate-500'>
               <a href='#' className='hover:text-slate-300 transition-colors'>
                 Privacy Policy
               </a>
