@@ -1206,9 +1206,9 @@ const App = () => {
           }}
         ></div>
 
-        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10'>
-          {/* Footer Grid */}
-          <div className='grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12 mb-10 md:mb-12'>
+        <div className='max-w-7xl mx-auto px-8 sm:px-10 md:px-14 lg:px-16 relative z-10'>
+          {/* Footer Grid — brand gets more space, links+connect grouped tighter */}
+          <div className='grid grid-cols-2 md:grid-cols-[1.8fr_0.6fr_0.6fr] gap-8 md:gap-4 lg:gap-5 mb-10 md:mb-12'>
             {/* Brand — full width on mobile */}
             <div className='col-span-2 md:col-span-1 flex flex-col items-center md:items-start text-center md:text-left gap-3'>
               <div className='flex items-center gap-3'>
