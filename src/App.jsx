@@ -1005,11 +1005,11 @@ const App = () => {
                       <div className='w-9 h-9 lg:w-12 lg:h-12 bg-white/10 backdrop-blur-md rounded-lg lg:rounded-2xl flex items-center justify-center flex-shrink-0 border border-white/10 shadow-lg group-hover:bg-white/20 transition-all duration-300'>
                         <Mail className='w-4 h-4 lg:w-5 lg:h-5 text-royal-gold' />
                       </div>
-                      <div className='text-left overflow-hidden'>
+                      <div className='text-left'>
                         <p className='text-[9px] lg:text-xs font-bold text-green-200 uppercase tracking-wider leading-tight'>
                           Email Us
                         </p>
-                        <span className='font-medium text-xs lg:text-lg'>
+                        <span className='font-medium text-xs lg:text-base'>
                           dmvqueenofclean@gmail.com
                         </span>
                       </div>
