@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   ArrowRight,
+  ArrowUp,
   Check,
   CheckCircle,
   Facebook,
@@ -174,6 +175,15 @@ const App = () => {
   // --- reCAPTCHA ---
   const recaptchaRef = useRef(null);
   const [captchaToken, setCaptchaToken] = useState('');
+
+  // --- Back to Top ---
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setShowScrollTop(window.scrollY > 300);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useEffect(() => {
     if (activeModal !== 'contact') return;
@@ -1325,6 +1335,22 @@ const App = () => {
           </div>
         </div>
       </footer>
+
+      {/* --- Floating action column (Option 1: single fixed column).
+           Back-to-top sits on top; the chat icon can stack in as the second
+           child here later without any repositioning. --- */}
+      <div className='fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3 md:gap-4'>
+        <button
+          type='button'
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          aria-label='Back to top'
+          className={`flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full bg-royal-green text-white shadow-lg shadow-royal-green/30 ring-1 ring-white/20 hover:bg-royal-dark hover:-translate-y-0.5 transition-all duration-300 ${
+            showScrollTop ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}
+        >
+          <ArrowUp className='w-5 h-5 md:w-6 md:h-6' />
+        </button>
+      </div>
     </div>
   );
 };
