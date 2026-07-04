@@ -10,6 +10,7 @@ import {
   Mail,
   MapPin,
   Menu,
+  MessageCircle,
   Phone,
   Sparkles,
   Star,
@@ -18,6 +19,7 @@ import {
   X,
 } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import ChatInterface from './components/ChatInterface'
 
 // --- IMAGES ---
 import moveInImg from './assets/images/clean-apartment.webp'
@@ -154,6 +156,7 @@ const resizeImage = (file, maxDim = 800, quality = 0.6) => {
 
 const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Modal Logic
   const [activeModal, setActiveModal] = useState(null);
@@ -983,7 +986,7 @@ const App = () => {
                 {/* Mobile: centered fit-content column. Tablet: 3-col grid. Desktop: left-aligned list */}
                 <div className='flex justify-center md:block'>
                   <div className='flex flex-col gap-3 md:grid md:grid-cols-3 lg:grid-cols-1 lg:gap-5'>
-                    <a href='tel:2025698373' className='flex items-center gap-3 lg:gap-4 bg-white/5 md:bg-white/10 rounded-xl px-4 py-3 lg:p-0 lg:bg-transparent lg:rounded-none group hover:bg-white/15 lg:hover:bg-transparent transition-all'>
+                    <a href='tel:2028217275' className='flex items-center gap-3 lg:gap-4 bg-white/5 md:bg-white/10 rounded-xl px-4 py-3 lg:p-0 lg:bg-transparent lg:rounded-none group hover:bg-white/15 lg:hover:bg-transparent transition-all'>
                       <div className='w-9 h-9 lg:w-12 lg:h-12 bg-white/10 backdrop-blur-md rounded-lg lg:rounded-2xl flex items-center justify-center flex-shrink-0 border border-white/10 shadow-lg group-hover:bg-white/20 transition-all duration-300'>
                         <Phone className='w-4 h-4 lg:w-5 lg:h-5 text-royal-gold' />
                       </div>
@@ -992,7 +995,7 @@ const App = () => {
                           Call Us
                         </p>
                         <span className='font-bold text-sm lg:text-xl tracking-tight group-hover:text-royal-gold transition-colors'>
-                          202-569-8373
+                          202-821-7275
                         </span>
                       </div>
                     </a>
@@ -1337,20 +1340,37 @@ const App = () => {
       </footer>
 
       {/* --- Floating action column (Option 1: single fixed column).
-           Back-to-top sits on top; the chat icon can stack in as the second
-           child here later without any repositioning. --- */}
-      <div className='fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3 md:gap-4'>
-        <button
-          type='button'
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          aria-label='Back to top'
-          className={`flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full bg-royal-green text-white shadow-lg shadow-royal-green/30 ring-1 ring-white/20 hover:bg-royal-dark hover:-translate-y-0.5 transition-all duration-300 ${
-            showScrollTop ? 'opacity-100' : 'opacity-0 pointer-events-none'
-          }`}
-        >
-          <ArrowUp className='w-5 h-5 md:w-6 md:h-6' />
-        </button>
-      </div>
+           Back-to-top on top, chat trigger closest to the corner. Hidden while
+           the chat window is open (the window occupies this corner). --- */}
+      {!isChatOpen && (
+        <div className='fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3 md:gap-4'>
+          <button
+            type='button'
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            aria-label='Back to top'
+            className={`flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full bg-royal-green text-white shadow-lg shadow-royal-green/30 ring-1 ring-white/20 hover:bg-royal-dark hover:-translate-y-0.5 transition-all duration-300 ${
+              showScrollTop ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            }`}
+          >
+            <ArrowUp className='w-5 h-5 md:w-6 md:h-6' />
+          </button>
+          <button
+            type='button'
+            onClick={() => setIsChatOpen(true)}
+            aria-label='Open cleaning assistant chat'
+            title='Chat with our cleaning assistant'
+            className='flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-full bg-royal-gold text-royal-dark shadow-lg shadow-royal-gold/40 ring-1 ring-white/30 hover:brightness-95 hover:-translate-y-0.5 transition-all duration-300'
+          >
+            <MessageCircle className='w-6 h-6 md:w-7 md:h-7' />
+          </button>
+        </div>
+      )}
+
+      <ChatInterface
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+        onRequestBooking={() => { setIsChatOpen(false); openContact(); }}
+      />
     </div>
   );
 };
