@@ -157,6 +157,8 @@ const resizeImage = (file, maxDim = 800, quality = 0.6) => {
 const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  // Contact form is collapsed behind a button on tablet/mobile; always shown on desktop (lg+).
+  const [showContactForm, setShowContactForm] = useState(false);
 
   // Modal Logic
   const [activeModal, setActiveModal] = useState(null);
@@ -1039,7 +1041,7 @@ const App = () => {
                           Email Us
                         </p>
                         <span className='font-medium text-xs lg:text-base'>
-                          dmvqueenofclean@gmail.com
+                          dmvqueenclean@gmail.com
                         </span>
                       </div>
                     </div>
@@ -1062,9 +1064,21 @@ const App = () => {
             </div>
 
             {/* Right/Bottom Side (White Form) */}
-            <div className='p-8 m-auto md:p-12 lg:w-3/5 bg-white'>
+            <div className='p-8 m-auto md:p-12 lg:w-3/5 bg-white w-full'>
+              {/* Tablet/mobile: reveal the form behind a button (desktop always shows it) */}
+              <button
+                type='button'
+                onClick={() => setShowContactForm((v) => !v)}
+                aria-expanded={showContactForm}
+                className='lg:hidden w-full flex items-center justify-center gap-2 bg-royal-green hover:bg-royal-dark text-white px-4 py-3 rounded-lg font-semibold transition-all shadow-lg shadow-royal-green/20 mb-6'
+              >
+                {showContactForm ? 'Hide Form' : 'Request a Free Estimate'}
+                <ArrowRight
+                  className={`w-4 h-4 transition-transform ${showContactForm ? 'rotate-90' : ''}`}
+                />
+              </button>
               <form
-                className='space-y-5'
+                className={`space-y-5 lg:block ${showContactForm ? 'block' : 'hidden'}`}
                 onSubmit={handleContactSubmit}
               >
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-5'>
