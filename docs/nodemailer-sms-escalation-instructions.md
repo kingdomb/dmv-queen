@@ -6,6 +6,15 @@ Instructions for the **Vercel nodemailer repo** (the service behind `VITE_API_UR
 
 > This repo change is only the *notification* piece. The chat itself routes bookings/escalations into the existing contact form, so no new endpoint is required — we're just adding a second, short outbound message on the `/feedback` handler.
 
+> **⚠️ IMPORTANT — if anything is unclear, ASK; do not guess.** This doc is written
+> generically and may not exactly match this repo. Before changing code, if the
+> framework, the existing nodemailer transporter/auth, the `from`/`to` env-var
+> names, or where/whether the main email currently goes to
+> `dmvqueenclean@gmail.com` differ from what's described here, **STOP and ask the
+> user for clarification** rather than assuming. A wrong guess about the
+> transporter or recipient could break the working contact form. Also do not
+> change the existing `/feedback` behavior beyond adding the optional SMS ping.
+
 ---
 
 ## What to change (design)
