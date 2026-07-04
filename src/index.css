@@ -19,3 +19,12 @@ body {
   font-family: var(--font-sans);
   background-color: var(--color-royal-beige);
 }
+
+/* Twinkle for the AI Chat sparkle icon */
+@keyframes twinkle {
+  0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+  50% { opacity: 0.5; transform: scale(1.25) rotate(18deg); }
+}
+.animate-twinkle {
+  animation: twinkle 1.8s ease-in-out infinite;
+}

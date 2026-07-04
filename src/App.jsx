@@ -648,7 +648,16 @@ const App = () => {
               </div>
             </div>
 
-            <div className='hidden lg:flex items-center space-x-8'>
+            <div className='hidden lg:flex items-center gap-3'>
+              <button
+                onClick={() => setIsChatOpen(true)}
+                aria-label='Open AI cleaning assistant'
+                className='group relative overflow-hidden inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold text-royal-dark bg-gradient-to-r from-royal-gold via-amber-300 to-royal-gold shadow-lg shadow-royal-gold/30 ring-1 ring-royal-gold/50 hover:shadow-royal-gold/50 hover:-translate-y-0.5 transition-all'
+              >
+                <span className='pointer-events-none absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/40 to-transparent'></span>
+                <Sparkles className='w-4 h-4 animate-twinkle' />
+                <span>AI Chat</span>
+              </button>
               <button
                 onClick={openContact}
                 className='group bg-royal-green hover:bg-royal-dark text-white px-6 py-2.5 rounded-full font-semibold transition-all shadow-lg shadow-royal-green/30 flex items-center gap-2'
@@ -672,6 +681,13 @@ const App = () => {
         {isMenuOpen && (
           <div className='lg:hidden bg-white border-t border-slate-100 absolute w-full shadow-xl'>
             <div className='px-4 pt-4 pb-6 space-y-2'>
+              <button
+                onClick={() => { setIsChatOpen(true); setIsMenuOpen(false); }}
+                className='w-full flex items-center justify-center gap-2 bg-gradient-to-r from-royal-gold via-amber-300 to-royal-gold text-royal-dark px-4 py-3 rounded-lg font-semibold shadow-sm'
+              >
+                <Sparkles className='w-4 h-4 animate-twinkle' />
+                AI Chat
+              </button>
               <button
                 onClick={openContact}
                 className='w-full text-center bg-royal-green text-white px-4 py-3 rounded-lg font-semibold'
