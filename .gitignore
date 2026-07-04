@@ -26,3 +26,12 @@ dist-ssr
 # Environment variables
 .env
 .env.*
+
+# Other
+notes/
+
+# Local reference file — Supabase schema/seed (not part of the app)
+supabase_setup.sql
+
+# Supabase CLI local cache
+supabase/.temp/
