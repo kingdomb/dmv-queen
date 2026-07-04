@@ -102,7 +102,8 @@ serve(async (req) => {
       supabase.from('client_fit').select('*').single(),
       supabase.from('faq_responses').select('*'),
       supabase.from('ai_instructions').select('*').order('priority', { ascending: false }),
-      supabase.from('testimonials').select('*').order('display_order'),
+      // Only genuine reviews reach visitors; placeholder/filler rows are excluded.
+      supabase.from('testimonials').select('*').eq('is_placeholder', false).order('display_order'),
     ])
 
     const systemPrompt = buildSystemPrompt(
