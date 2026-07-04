@@ -1,0 +1,69 @@
+# ============================================================================
+# Supabase Keep-Alive
+#
+# Supabase free-tier projects PAUSE after ~7 days with no real database
+# activity. A paused DB breaks the AI chat (and any DB reads) on the site.
+# A real PostgREST query counts as activity; /auth/v1/health does NOT.
+#
+# ---------------------------------------------------------------------------
+# WHY THIS IS NOT THE ONLY LAYER (findings from the prior project):
+#   The ping mechanism works fine WHEN IT RUNS. The failure mode was GitHub's
+#   scheduled cron itself:
+#     - GitHub `schedule:` runs are often delayed and sometimes silently
+#       DROPPED under load. At an every-5-days cadence, one skipped run near
+#       the 7-day boundary = the DB sleeps. (We verified the DB was being
+#       touched, but the schedule didn't fire reliably.)
+#     - GitHub also DISABLES scheduled workflows after 60 days with no repo
+#       commits (hence the separate commit-keep-alive protocol).
+#
+# THE LAYERED SOLUTION we adopted (most → least reliable):
+#   1. PRIMARY: an always-on external cron (cron-job.org, free) hitting
+#      `${SUPABASE_URL}/rest/v1/business_profile?limit=1` with the anon key.
+#      No GitHub flakiness, no laptop dependency.
+#   2. BACKUP (this file): GitHub Actions, but DAILY (not every 5 days) so
+#      dropped runs don't matter — many chances land inside the 7-day window.
+#   3. EXTRA: a local systemd timer on the dev laptop (only fires when awake).
+#   4. DEFINITIVE FIX for the live site: Supabase Pro ($25/mo) never pauses.
+#
+# Requires repo secrets (Settings → Secrets and variables → Actions):
+#   SUPABASE_URL       e.g. https://vonxpxyxuhlmdpwjilud.supabase.co
+#   SUPABASE_ANON_KEY  the publishable/anon key (public-safe)
+#
+# NOTE: scheduled workflows only run from the DEFAULT branch, so this must be
+# merged to main to take effect. Use "Run workflow" (workflow_dispatch) to test.
+# ============================================================================
+name: Supabase Keep Alive
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # Daily at 06:00 UTC — generous margin under the 7-day pause
+  workflow_dispatch: {}
+
+jobs:
+  ping_supabase:
+    runs-on: ubuntu-latest
+    # Both steps below were verified against this project: the RPC returns 204
+    # and the table query returns 200 — both are real DB activity. (The bare
+    # /rest/v1/ schema ping from the original guide was dropped: it returns 401
+    # with the publishable key and isn't a real query anyway.)
+    steps:
+      - name: Call keep_alive RPC function
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/rpc/keep_alive" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{}')
+          echo "RPC keep_alive status: $STATUS"
+
+      - name: Query a live table (real DB activity)
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/business_profile?limit=1" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}")
+          echo "Table query status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "::warning::Keep-alive table query returned $STATUS (expected 200)"
+          fi
