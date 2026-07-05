@@ -297,6 +297,7 @@ const App = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
+          site: 'dmv', // routes /feedback to DMV Queen (inbox + SMS); required since staging shares an origin with the portfolio
           images: images.map((img) => img.base64),
           'g-recaptcha-response': captchaToken,
         }),
