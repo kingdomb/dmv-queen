@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
-import { Send, X, Sparkles } from 'lucide-react';
+import { Send, X, Sparkles, ThumbsUp, ThumbsDown } from 'lucide-react';
 
 const MotionDiv = motion.div;
 
@@ -24,12 +24,62 @@ const markdownComponents = {
   p: (props) => <p className='mb-2 last:mb-0' {...props} />,
 };
 
+const newSessionId = () =>
+  (globalThis.crypto?.randomUUID?.() ??
+    `sess-${Date.now()}-${Math.random().toString(16).slice(2)}`);
+
 export default function ChatInterface({ isOpen, onClose, onRequestBooking }) {
   const [messages, setMessages] = useState([{ role: 'assistant', content: OPENING }]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  // End-chat + feedback flow
+  const [ending, setEnding] = useState(false);      // showing the rating panel
+  const [rating, setRating] = useState(null);       // 'up' | 'down' | null
+  const [comment, setComment] = useState('');
+  const [feedbackDone, setFeedbackDone] = useState(false);
+  const sessionId = useRef(newSessionId());
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  // Reset to a brand-new session (called after the window has closed).
+  const resetSession = () => {
+    setMessages([{ role: 'assistant', content: OPENING }]);
+    setInput('');
+    setEnding(false);
+    setRating(null);
+    setComment('');
+    setFeedbackDone(false);
+    sessionId.current = newSessionId();
+  };
+
+  // Close the window, then quietly reset once the exit animation has played so
+  // the next open starts a fresh session (and the reset isn't seen mid-close).
+  const finishAndClose = () => {
+    onClose();
+    setTimeout(resetSession, 350);
+  };
+
+  const sendFeedback = async () => {
+    try {
+      await supabase.functions.invoke('chat-feedback', {
+        body: {
+          sessionId: sessionId.current,
+          rating,
+          comment: comment.trim(),
+          messageCount: messages.length,
+          transcript: messages.map((m) => ({ role: m.role, content: m.content })),
+        },
+      });
+    } catch {
+      // Never block closing on a feedback failure.
+    }
+  };
+
+  const handleSubmitFeedback = async () => {
+    setFeedbackDone(true);        // show the thank-you immediately
+    sendFeedback();               // fire-and-forget; closing shouldn't wait
+    setTimeout(finishAndClose, 1100);
+  };
 
   useEffect(() => {
     // Only auto-scroll to the latest once a conversation is underway, so the
@@ -103,15 +153,28 @@ export default function ChatInterface({ isOpen, onClose, onRequestBooking }) {
                 <p className='text-[11px] text-green-100'>Cleaning Assistant • Online</p>
               </div>
             </div>
-            <button
-              onClick={onClose}
-              aria-label='Close chat'
-              className='text-green-100 hover:text-white transition-colors p-1'
-            >
-              <X className='w-5 h-5' />
-            </button>
+            <div className='flex items-center gap-1'>
+              {!ending && (
+                <button
+                  onClick={() => setEnding(true)}
+                  className='text-[11px] font-semibold text-green-100 hover:text-white border border-green-100/40 hover:border-white rounded-full px-2.5 py-1 transition-colors'
+                >
+                  End chat
+                </button>
+              )}
+              <button
+                onClick={onClose}
+                aria-label='Minimize chat'
+                title='Minimize'
+                className='text-green-100 hover:text-white transition-colors p-1'
+              >
+                <X className='w-5 h-5' />
+              </button>
+            </div>
           </div>
 
+          {!ending && (
+           <>
           {/* Messages */}
           <div className='flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50'>
             {messages.map((msg, index) => (
@@ -196,6 +259,87 @@ export default function ChatInterface({ isOpen, onClose, onRequestBooking }) {
               <Send className='w-4 h-4' />
             </button>
           </form>
+           </>
+          )}
+
+          {/* End-chat / feedback panel */}
+          {ending && (
+            <div className='flex-1 overflow-y-auto p-5 bg-slate-50 flex flex-col'>
+              {feedbackDone ? (
+                <div className='m-auto text-center'>
+                  <div className='text-4xl mb-2'>💚</div>
+                  <p className='font-serif font-bold text-royal-green text-lg'>Thanks for your feedback!</p>
+                  <p className='text-sm text-slate-500 mt-1'>Take care — we're here whenever you need us.</p>
+                </div>
+              ) : (
+                <>
+                  <div className='text-center mb-4'>
+                    <h4 className='font-serif font-bold text-royal-green text-lg'>Thanks for chatting! 👋</h4>
+                    <p className='text-sm text-slate-500 mt-1'>
+                      How was your experience? <span className='text-slate-400'>(optional)</span>
+                    </p>
+                  </div>
+
+                  <div className='flex justify-center gap-3 mb-4'>
+                    <button
+                      onClick={() => setRating(rating === 'up' ? null : 'up')}
+                      className={`flex flex-col items-center gap-1 w-24 py-3 rounded-xl border transition-colors ${
+                        rating === 'up'
+                          ? 'bg-royal-green text-white border-royal-green'
+                          : 'bg-white text-slate-600 border-slate-200 hover:border-royal-green'
+                      }`}
+                    >
+                      <ThumbsUp className='w-6 h-6' />
+                      <span className='text-xs font-semibold'>Helpful</span>
+                    </button>
+                    <button
+                      onClick={() => setRating(rating === 'down' ? null : 'down')}
+                      className={`flex flex-col items-center gap-1 w-24 py-3 rounded-xl border transition-colors ${
+                        rating === 'down'
+                          ? 'bg-red-500 text-white border-red-500'
+                          : 'bg-white text-slate-600 border-slate-200 hover:border-red-400'
+                      }`}
+                    >
+                      <ThumbsDown className='w-6 h-6' />
+                      <span className='text-xs font-semibold'>Not helpful</span>
+                    </button>
+                  </div>
+
+                  <textarea
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    rows={3}
+                    maxLength={2000}
+                    placeholder='Any comments to help us improve? (optional)'
+                    className='w-full text-sm text-slate-800 bg-white border border-slate-200 rounded-xl px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-royal-green focus:border-transparent'
+                  />
+
+                  <div className='mt-auto pt-4 space-y-2'>
+                    <button
+                      onClick={handleSubmitFeedback}
+                      className='w-full bg-royal-green text-white font-bold text-sm rounded-xl py-2.5 hover:bg-royal-dark transition-colors'
+                    >
+                      Submit &amp; close
+                    </button>
+                    <div className='flex justify-between text-xs'>
+                      <button
+                        onClick={() => setEnding(false)}
+                        className='text-slate-500 hover:text-royal-green px-2 py-1'
+                      >
+                        ← Back to chat
+                      </button>
+                      <button
+                        onClick={finishAndClose}
+                        className='text-slate-400 hover:text-slate-600 px-2 py-1'
+                      >
+                        Skip
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </MotionDiv>
       )}
     </AnimatePresence>
