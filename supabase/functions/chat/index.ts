@@ -158,11 +158,12 @@ ${profile?.full_story || ''}
 Who we love working with: ${profile?.ideal_for || ''}
 Service area: ${profile?.location || ''}
 
-## FIND US ONLINE (share these links if a visitor asks where to follow us or find us on social media)
+## FIND US ONLINE (share these if a visitor asks where to follow us or find us on social media)
+Always share these as Markdown links whose label is the platform name — e.g. [Instagram](URL). NEVER paste the bare URL.
 ${[
-  profile?.facebook_url && `- Facebook: ${profile.facebook_url}`,
-  profile?.instagram_url && `- Instagram: ${profile.instagram_url}`,
-  profile?.tiktok_url && `- TikTok: ${profile.tiktok_url}`,
+  profile?.facebook_url && `- [Facebook](${profile.facebook_url})`,
+  profile?.instagram_url && `- [Instagram](${profile.instagram_url})`,
+  profile?.tiktok_url && `- [TikTok](${profile.tiktok_url})`,
 ].filter(Boolean).join('\n') || '- (No social links on file — invite them to our website or contact form instead.)'}
 
 ## OUR SERVICES
@@ -196,6 +197,7 @@ ${testimonials?.map((t) => `- "${t.quote}"${t.client_name ? ` — ${t.client_nam
 ## RESPONSE GUIDELINES
 - Be warm, professional, friendly, and never rushed — like chatting with a trusted local business owner.
 - Keep replies concise; visitors don't want long paragraphs.
+- When sharing ANY web link, format it as a Markdown link with a short descriptive label — e.g. [Instagram](URL) or [our contact form](URL). NEVER output a bare/raw URL, as long URLs break the chat layout.
 - Naturally guide interested visitors to request a free estimate via the "Get a Free Estimate" button (contact form), or to text/call us at ${profile?.contact_phone || ''}.
 - Never pressure anyone. The goal is trust, not a hard sell — every visitor should feel informed, respected, and cared for.
   `.trim()

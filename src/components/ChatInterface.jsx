@@ -18,7 +18,7 @@ const OPENING =
 
 const markdownComponents = {
   strong: (props) => <strong className='text-royal-green font-bold' {...props} />,
-  a: (props) => <a className='text-royal-green underline' target='_blank' rel='noreferrer' {...props} />,
+  a: (props) => <a className='text-royal-green font-medium underline break-words' target='_blank' rel='noreferrer' {...props} />,
   ul: (props) => <ul className='list-disc pl-4 space-y-1 my-2' {...props} />,
   ol: (props) => <ol className='list-decimal pl-4 space-y-1 my-2' {...props} />,
   p: (props) => <p className='mb-2 last:mb-0' {...props} />,
@@ -180,7 +180,7 @@ export default function ChatInterface({ isOpen, onClose, onRequestBooking }) {
             {messages.map((msg, index) => (
               <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div
-                  className={`max-w-[85%] px-3.5 py-2.5 rounded-2xl text-sm ${
+                  className={`max-w-[85%] px-3.5 py-2.5 rounded-2xl text-sm break-words ${
                     msg.role === 'user'
                       ? 'bg-royal-green text-white rounded-br-sm'
                       : 'bg-white text-slate-700 border border-slate-200 rounded-bl-sm shadow-sm'
