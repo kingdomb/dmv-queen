@@ -158,6 +158,13 @@ ${profile?.full_story || ''}
 Who we love working with: ${profile?.ideal_for || ''}
 Service area: ${profile?.location || ''}
 
+## FIND US ONLINE (share these links if a visitor asks where to follow us or find us on social media)
+${[
+  profile?.facebook_url && `- Facebook: ${profile.facebook_url}`,
+  profile?.instagram_url && `- Instagram: ${profile.instagram_url}`,
+  profile?.tiktok_url && `- TikTok: ${profile.tiktok_url}`,
+].filter(Boolean).join('\n') || '- (No social links on file — invite them to our website or contact form instead.)'}
+
 ## OUR SERVICES
 ${services?.map((s) => `
 ### ${s.service_name}
