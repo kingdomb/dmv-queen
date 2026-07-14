@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import ChatInterface from './components/ChatInterface'
+import InsuredBadge from './components/InsuredBadge'
 
 // --- IMAGES ---
 import moveInImg from './assets/images/clean-apartment.webp'
@@ -27,18 +28,18 @@ import commercialImg from './assets/images/clean-office.jpg'
 import logoImg from './assets/images/logo-head-transparent-nav-image.png'
 import cleanerImage from './assets/images/placeholder-cleaner.jpg'
 import residentialImg from './assets/images/real-livingroom.jpg'
-import luxuryHeroImg from './assets/images/luxury-hero.png'
 
-// --- HERO BACKGROUND IMAGES ---
-import mobileHeroImg from './assets/images/cleaning-counter.webp'
-import combinedHeroImg from './assets/images/combined-hero.png'
+// Aliased to uppercase so lint counts these as component usage (see ChatInterface).
+const MotionDiv = motion.div
+const MotionSection = motion.section
+const MotionSvg = motion.svg
 
 // --- CUSTOM SPARKLE COMPONENT ---
 const CleanSparkle = ({ delay = 1, color = 'gold' }) => {
   const isWhite = color === 'white';
 
   return (
-    <motion.svg
+    <MotionSvg
       width='30'
       height='30'
       viewBox='0 0 24 24'
@@ -67,7 +68,7 @@ const CleanSparkle = ({ delay = 1, color = 'gold' }) => {
             : 'fill-royal-gold drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]'
         }
       />
-    </motion.svg>
+    </MotionSvg>
   );
 };
 
@@ -89,7 +90,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
       {isOpen && (
         <>
           {/* Backdrop */}
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -99,7 +100,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
 
           {/* Modal Container */}
           <div className='fixed inset-0 z-[70] flex items-center justify-center p-4'>
-            <motion.div
+            <MotionDiv
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -124,7 +125,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
 
               {/* Modal Content */}
               <div className='p-6 md:p-8 pt-4'>{children}</div>
-            </motion.div>
+            </MotionDiv>
           </div>
         </>
       )}
@@ -705,12 +706,12 @@ const App = () => {
       {/* --- HERO SECTION (Modern Split Layout) --- */}
       <header className='relative pt-28 pb-20 lg:pt-40 lg:pb-32 overflow-hidden bg-royal-beige'>
         {/* Background Decorative Orbs */}
-        <motion.div
+        <MotionDiv
           animate={{ y: [0, -40, 0], opacity: [0.3, 0.6, 0.3] }}
           transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
           className='absolute top-0 right-0 -mr-20 -mt-20 w-[600px] h-[600px] bg-royal-gold/10 rounded-full blur-[100px] pointer-events-none'
         />
-        <motion.div
+        <MotionDiv
           animate={{ y: [0, 40, 0], opacity: [0.3, 0.6, 0.3] }}
           transition={{
             duration: 10,
@@ -725,16 +726,19 @@ const App = () => {
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center'>
             
             {/* Left Column: Text & CTA */}
-            <motion.div
+            <MotionDiv
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
               className='text-center lg:text-left pt-10 lg:pt-0'
             >
-              <span className='inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-white/80 border border-royal-green/20 text-royal-dark text-xs md:text-sm font-bold tracking-wide uppercase mb-8 shadow-sm backdrop-blur-sm'>
-                <Star className='w-4 h-4 text-royal-gold fill-royal-gold' />
-                Royalty Standard Cleaning
-              </span>
+              <div className='flex flex-wrap items-center justify-center lg:justify-start gap-2 mb-8'>
+                <span className='inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-white/80 border border-royal-green/20 text-royal-dark text-xs md:text-sm font-bold tracking-wide uppercase shadow-sm backdrop-blur-sm'>
+                  <Star className='w-4 h-4 text-royal-gold fill-royal-gold' />
+                  Royalty Standard Cleaning
+                </span>
+                <InsuredBadge variant='hero' />
+              </div>
 
               <h1 className='text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-extrabold tracking-tight text-royal-dark mb-6 leading-[1.1] drop-shadow-sm'>
                 Your Home <br className="hidden lg:block"/> Deserves the <br />
@@ -764,10 +768,10 @@ const App = () => {
                   Get 10% Off
                 </button>
               </div>
-            </motion.div>
+            </MotionDiv>
 
             {/* Right Column: Hero Image */}
-            <motion.div
+            <MotionDiv
               initial={{ opacity: 0, scale: 0.95, x: 50 }}
               animate={{ opacity: 1, scale: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
@@ -789,7 +793,7 @@ const App = () => {
                 </div>
 
                 {/* Floating "Satisfaction" Badge */}
-                <motion.div 
+                <MotionDiv 
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 1, duration: 0.5 }}
@@ -802,16 +806,16 @@ const App = () => {
                     <p className='text-xs font-bold text-slate-500 uppercase tracking-wider'>Guarantee</p>
                     <p className='text-sm font-bold text-royal-dark'>100% Satisfaction</p>
                   </div>
-                </motion.div>
+                </MotionDiv>
               </div>
-            </motion.div>
+            </MotionDiv>
 
           </div>
         </div>
       </header>
 
       {/* --- Services Section --- */}
-      <motion.section 
+      <MotionSection 
         className='py-24 bg-white relative'
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -847,10 +851,10 @@ const App = () => {
             />
           </div>
         </div>
-      </motion.section>
+      </MotionSection>
 
       {/* --- Subscribe Banner --- */}
-      <motion.section
+      <MotionSection
         id='subscribe'
         className='py-12 bg-gradient-to-r from-royal-green/5 to-teal-50 border-y border-slate-100 relative overflow-hidden'
         initial={{ opacity: 0, scale: 0.95 }}
@@ -905,10 +909,10 @@ const App = () => {
             </div>
           </div>
         </div>
-      </motion.section>
+      </MotionSection>
 
       {/* --- Why Choose Us --- */}
-      <motion.section 
+      <MotionSection 
         className='py-28 bg-royal-dark text-royal-beige relative overflow-hidden'
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
@@ -965,10 +969,10 @@ const App = () => {
             
           </div>
         </div>
-      </motion.section>
+      </MotionSection>
 
       {/* --- Contact Section --- */}
-      <motion.section 
+      <MotionSection 
         id='contact' 
         className='py-24 bg-green-50/50'
         initial={{ opacity: 0, y: 50 }}
@@ -996,10 +1000,14 @@ const App = () => {
                 </h2>
                 <div className='w-12 h-1 bg-royal-gold rounded-full mb-4 lg:mb-6 mx-auto lg:mx-0'></div>
 
-                <p className='mb-5 lg:mb-10 text-green-50 text-sm md:text-base lg:text-lg leading-relaxed font-light text-center lg:text-left'>
+                <p className='mb-4 lg:mb-6 text-green-50 text-sm md:text-base lg:text-lg leading-relaxed font-light text-center lg:text-left'>
                   Ready for a spotless space? Reach out today for your free
                   royal estimate.
                 </p>
+
+                <div className='flex justify-center lg:justify-start mb-5 lg:mb-10'>
+                  <InsuredBadge variant='onGreen' />
+                </div>
 
                 {/* Contact info — 3-col grid on tablet, stacked rows on mobile, list on desktop */}
                 {/* Mobile: centered fit-content column. Tablet: 3-col grid. Desktop: left-aligned list */}
@@ -1071,7 +1079,7 @@ const App = () => {
                 type='button'
                 onClick={() => setShowContactForm((v) => !v)}
                 aria-expanded={showContactForm}
-                className='lg:hidden w-full flex items-center justify-center gap-2 bg-royal-green hover:bg-royal-dark text-white px-4 py-3 rounded-lg font-semibold transition-all shadow-lg shadow-royal-green/20 mb-6'
+                className='lg:hidden w-full flex items-center justify-center gap-2 bg-royal-green hover:bg-royal-dark text-white px-4 py-3 rounded-full font-semibold transition-all shadow-lg shadow-royal-green/20 mb-6'
               >
                 {showContactForm ? 'Hide Form' : 'Request a Free Estimate'}
                 <ArrowRight
@@ -1238,7 +1246,7 @@ const App = () => {
             </div>
           </div>
         </div>
-      </motion.section>
+      </MotionSection>
 
       <footer className='bg-royal-dark text-white pt-16 pb-8 relative overflow-hidden'>
         <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-royal-green via-teal-500 to-royal-gold'></div>
@@ -1274,6 +1282,7 @@ const App = () => {
                 Bringing royalty standard cleaning to homes and businesses
                 across Washington DC, Maryland, and Virginia.
               </p>
+              <InsuredBadge variant='footer' className='mt-1' />
             </div>
 
             {/* Quick Links */}
@@ -1409,7 +1418,7 @@ const App = () => {
 // --- SUB-COMPONENTS ---
 
 const ServiceCard = ({ title, desc, icon, image }) => (
-  <motion.div
+  <MotionDiv
     whileHover={{ y: -5 }}
     className='group relative overflow-hidden rounded-2xl shadow-lg border border-slate-200 h-64 lg:h-72 cursor-pointer'
   >
@@ -1440,7 +1449,7 @@ const ServiceCard = ({ title, desc, icon, image }) => (
         &nbsp;{desc}
       </p>
     </div>
-  </motion.div>
+  </MotionDiv>
 );
 
 const ListItem = ({ text }) => (
